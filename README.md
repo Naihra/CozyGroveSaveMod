@@ -1,8 +1,11 @@
-# CozyGroveSaveMod
+# Animal List
+
+# Essence Recycler
 
 # Finder
 
 # Imp Finder
 
-# Animal List
+# Sort Collection
 
+# Sort Wardrobe
