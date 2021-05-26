@@ -1,11 +1,11 @@
-# Animal List
+## Animal List
 
-# Essence Recycler
+## Essence Recycler
 
-# Finder
+## Finder
 
-# Imp Finder
+## Imp Finder
 
-# Sort Collection
+## Sort Collection
 
-# Sort Wardrobe
+## Sort Wardrobe
