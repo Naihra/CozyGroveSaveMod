@@ -1,11 +1,15 @@
-## Animal List
+To use any of these apps for the first time download all the items, you need the data folder as it is. Then simply run the .html in any browser.
 
-## Essence Recycler
+## Show data
+### Animal List
 
-## Finder
+### Finder
 
-## Imp Finder
+### Imp Finder
 
-## Sort Collection
+## Modify data
+### Essence Recycler
 
-## Sort Wardrobe
+### Sort Collection
+
+### Sort Wardrobe
