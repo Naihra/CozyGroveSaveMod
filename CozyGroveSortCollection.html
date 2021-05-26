@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Cosy Grove Sort Collection</title>
+	<style type="text/css">
+		a,label,input {		
+		font-family: 'Courier New', monospace;		
+		margin: 5px;
+		}
+	</style>
+	<script src="./data/function.js"></script>
+</head>
+
+<body>
+
+	<h1>Cozy Grove Sort Collection</h1>	
+	
+	<label for="uploadSourceFile">Select your save</label><br>
+	<input id="uploadSourceFile" type="file" accept=".sf">
+	<br><br>
+	
+	 <input type="checkbox" id="orderAll" onclick="setOrderAll()">
+	 <label for="orderAll">All</label>
+	<br> 
+	<input type="checkbox" id="orderShells">
+	<label for="orderShells">Shells</label>
+	<select id="agrupShells">
+		<option value="ashRarity">Group by rarity</option>
+		<option value="ashColour">Group by colour</option>
+	</select> 
+	<br>
+	<input type="checkbox" id="orderFishs">
+	<label for="orderFishs">Fishs</label> 
+	<select id="agrupFishes">
+		<option value="afiType">Group by season/type</option>
+		<option value="afiSeason">Group by season/rarity</option>
+		<option value="afiRarity">Group by rarity</option>		
+	</select> 
+	<br>
+	<input type="checkbox" id="orderFlowers">
+	<label for="orderFlowers">Flowers</label>
+	<select id="agrupFlowers">
+		<option value="aflRarity">Group by rarity</option>
+		<option value="aflColour">Group by colour</option>
+	</select> 
+	<br>
+	<input type="checkbox" id="orderFoods">
+	<label for="orderFoods">Foods</label> 	
+	<br>
+	<input type="checkbox" id="orderMats">
+	<label for="orderMats">Materials</label> 
+	<br>	
+	
+	<input id="bt_sort" type="button" value="Sort" onclick="sort();" disabled ="true">
+	<br><br>
+
+	<script>
+	document.getElementById("uploadSourceFile").addEventListener("change", loadSource, false);
+	
+	function start( result )
+	{
+		if ( result )
+		{
+			document.getElementById("bt_sort").disabled = false;
+		}
+		else
+		{
+			document.getElementById("bt_sort").disabled = true;	
+		}
+	}	
+
+	function sort() 
+	{			
+		var checkSave = false;
+		var checkAll = document.getElementById("orderAll").checked;
+		
+		arrayRarity = [ "common", "uncommon", "rare", "legendary", "unique" ];
+		arraySeason = [ "earlyspring", "spring", "latespring", "earlysummer", "summer", "latesummer", "earlyfall", "fall", "latefall", "earlywinter", "winter", "latewinter" ];
+		arrayLetter = [ "A","B","C","D","E","F","G","H","I","J","K","L" ];
+		
+		if ( document.getElementById("orderFishs").checked || checkAll )
+		{
+			sortCustom( "fishs", document.getElementById("agrupFishes").options[document.getElementById("agrupFishes").selectedIndex].value );
+			checkSave = true;
+		}
+		if ( document.getElementById("orderFlowers").checked || checkAll )
+		{
+			sortCustom( "flowers", document.getElementById("agrupFlowers").options[document.getElementById("agrupFlowers").selectedIndex].value );
+			checkSave = true;
+		}
+		if ( document.getElementById("orderFoods").checked || checkAll )
+		{
+			sortCategory("foods");			
+			checkSave = true;
+		}
+		if ( document.getElementById("orderMats").checked || checkAll )
+		{
+			sortCategory("materials");			
+			checkSave = true;
+		}
+		if ( document.getElementById("orderShells").checked || checkAll )
+		{
+			sortCustom( "shells", document.getElementById("agrupShells").options[document.getElementById("agrupShells").selectedIndex].value );
+			checkSave = true;
+		}		
+		save( JSON, checkSave );			
+	}
+	
+	function sortCategory ( cat )
+	{
+		var array_name = [];
+		var array_sort = [];
+		var array_date = [];
+
+		for (var key in json.PlayerCollections.itemGroups[cat].donatedItemConfigIdMap )
+		{				
+			array_name.push(key);
+			array_sort.push(key);
+			array_date.push(json.PlayerCollections.itemGroups[cat].donatedItemConfigIdMap[key].foundTimestamp);			
+			
+			delete json.PlayerCollections.itemGroups[cat].donatedItemConfigIdMap[key];
+		}
+		
+		array_sort.sort();			
+		var obj = json.PlayerCollections.itemGroups[cat].donatedItemConfigIdMap;
+							
+		for ( var i in array_sort )
+		{
+			var item = array_sort[i];			
+			var index = array_name.indexOf(item);
+				
+			var start = '{"';
+			var str = start.concat(item,'":{"foundTimestamp":', array_date[index],',"hasCollectedReward":true}}');
+			var conv = JSON.parse(str);
+			
+			Object.assign(obj, conv);			
+		}		
+	}
+	
+	function sortCustom ( cat, sort )
+	{
+		var array_name = [];
+		var array_code = [];
+		var array_sort = [];
+		var array_date = [];
+						
+		for (var key in json.PlayerCollections.itemGroups[cat].donatedItemConfigIdMap )
+		{				
+			array_name.push(key);
+			array_date.push(json.PlayerCollections.itemGroups[cat].donatedItemConfigIdMap[key].foundTimestamp);			
+			
+			var nameSplit = key.split("_");
+			
+			//For shells first have to make [0] = shells and check [2] is the rarity
+			if ( sort.substring(0,3) == "ash" )
+			{				
+				do
+				{
+					var checkRarity = arrayRarity.indexOf(nameSplit[2]);
+					if ( checkRarity == -1 )
+					{
+						nameSplit.shift();
+					}					
+				}
+				while ( checkRarity == -1 );
+				
+				nameSplit[0] = "shell";
+				nameSplit[2] = checkRarity;
+				//Column added so it matches flowers
+				nameSplit.unshift("shell");
+			}
+			
+			//Season, same for all
+			if ( nameSplit.length == 6 )
+			{
+				nameSplit[4] += nameSplit[5];
+				nameSplit.pop();
+			}
+			nameSplit[4] = arrayLetter[arraySeason.indexOf(nameSplit[4])];
+			
+			//Flower and shells by color, swap rarity/season
+			if ( sort == "aflColour" || sort == "ashColour" )
+			{
+				nameSplit.splice(3, 2, nameSplit[4], nameSplit[3] );
+			}			
+			
+			//For all fishes
+			if ( sort.substring(0,3) == "afi" )
+			{
+				nameSplit[2] = arrayRarity.indexOf(nameSplit[2]);				
+				
+				switch (sort)
+				{
+					case "afiRarity":
+						nameSplit.splice(3, 2, nameSplit[4], nameSplit[3] );
+					break;
+					
+					case "afiSeason":
+						nameSplit.splice(2, 3, nameSplit[4], nameSplit[2], nameSplit[3] );					
+					break;
+					
+					case "afiType":
+						nameSplit.splice(2, 3, nameSplit[4], nameSplit[3], nameSplit[2] );
+					break;
+				}			
+			}					
+			
+			array_code.push(nameSplit.join(""));
+			array_sort.push(nameSplit.join(""));
+			
+			delete json.PlayerCollections.itemGroups[cat].donatedItemConfigIdMap[key];
+		}
+		
+		array_sort.sort();			
+		var obj = json.PlayerCollections.itemGroups[cat].donatedItemConfigIdMap;
+							
+		for ( var i in array_sort )
+		{	
+			var index = array_code.indexOf(array_sort[i]);
+				
+			var start = '{"';
+			var str = start.concat(array_name[index],'":{"foundTimestamp":', array_date[index],',"hasCollectedReward":true}}');
+			var conv = JSON.parse(str);
+			
+			Object.assign(obj, conv);		
+		 }
+	}
+	
+	function setOrderAll()
+	{
+		var checkAll = document.getElementById("orderAll");
+
+		document.getElementById("orderFishs").disabled = checkAll.checked;
+		document.getElementById("orderFlowers").disabled = checkAll.checked;
+		document.getElementById("orderFoods").disabled = checkAll.checked;
+		document.getElementById("orderMats").disabled = checkAll.checked;
+		document.getElementById("orderShells").disabled = checkAll.checked;
+	}
+	
+	</script>
+</body>
+</html>

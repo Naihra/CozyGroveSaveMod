@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Cosy Grove Animal List</title>
+	<style type="text/css">
+		a,label,input {		
+		font-family: 'Courier New', monospace;		
+		margin: 5px;
+		}
+		
+		table, th, td {
+		border:1px solid #c3c3c3;
+		}		
+	</style>	
+	<script src="./data/sorttable.js"></script>
+	<script src="./data/function.js"></script>
+</head>
+
+<body>
+
+	<h1>Cozy Grove Animal List</h1>	
+	
+	<label for="uploadSourceFile">Select your save</label><br>
+	<input id="uploadSourceFile" type="file" accept=".sf">
+	<br><br>		
+	
+	<canvas id="myCanvas" width="1000" height="920" style="border:1px solid #c3c3c3;">
+		Your browser does not support the canvas element.
+	</canvas>
+
+	<div class="table">
+	<table class="sortable" id="animalTable" style="display:none">
+	<thead>
+		<tr>
+			<th>#</th>
+			<th>X</th>
+			<th>Y</th>
+			<th>Full Name</th>
+			<th>Age</th>
+			<th>Type</th>
+			<th>Animal</th>
+			<th>Times fed</th>
+			<th>Ready to level</th>
+			<th>Want to eat</th>
+			<th>Like</th>
+			<th>Dislike</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+		</tr>
+	</tbody>
+	</table>
+	</div>
+	
+	<br><br>	
+	
+	<script>
+	
+	iniPaint();
+	document.getElementById("uploadSourceFile").addEventListener("change", loadSource, false);
+	
+	function start( result )
+	{
+		if ( result )
+		{
+			clearCanvas();
+			paintGrid();
+			paintBase( false );
+			paintAnimals();
+		}
+	}
+	
+	function paintAnimals()
+	{
+		var contador = 1;
+		
+		const arrayGame = ["ornate","spectral","sad","spiny","demon","moon","eerie","spirit","forest","blood" ];
+		const arraySave = ["darkyellow","darkpurple","darkblue","darkgreen","darkred","lightyellow","lightpurple","lightblue","lightgreen","lightred" ];
+		const arrayAge  = ["","young","adult","mature"];
+		const arrayLike	= ["","rustic","cozy","natural","spooky","bustling"];
+		const arrayDisl = ["","deer","bird","imp","common","uncommon"];
+		const size = 30;
+		
+		var table = document.getElementById("animalTable");
+			
+		for( var key in json.AnimalsByID )
+		{			
+			var line = json.AnimalsByID[key].Value;
+			
+			var nameSplit = line.configID.Value.split("_");			
+	
+			var pos_x = 4 * (line.position.x + offset_x) - (size / 3);
+			var pos_y = 4 * (offset_y - line.position.y) - (size / 2);
+			
+			var name = arrayGame[arraySave.indexOf(nameSplit[2].concat(nameSplit[3]))];
+			var imgName = nameSplit[1].concat("_", name );
+			
+			loadAndDraw(rutaAnimal, "png", imgName, pos_x, pos_y, size / 1.5, size);
+				
+			contador += 1;				
+			var row 		  = table.insertRow(contador);				
+			var cell_id       = row.insertCell(0);
+			var cell_posx     = row.insertCell(1);
+			var cell_posy     = row.insertCell(2);
+			var cell_saveName = row.insertCell(3);
+			var cell_age      = row.insertCell(4);
+			var cell_gameName = row.insertCell(5);
+			var cell_type     = row.insertCell(6);
+			var cell_feds     = row.insertCell(7);
+			var cell_level    = row.insertCell(8);
+			var cell_want     = row.insertCell(9);			
+			var cell_like     = row.insertCell(10);
+			var cell_dislike  = row.insertCell(11);
+			
+			cell_id.innerHTML 		= key;
+			cell_type.innerHTML 	= nameSplit[1];
+			cell_saveName.innerHTML = line.configID.Value;
+			cell_gameName.innerHTML = name;
+			cell_age.innerHTML 		= arrayAge[nameSplit[6]];
+			cell_feds.innerHTML 	= line.fedCount;
+			cell_level.innerHTML 	= line.shouldUpgradeWhenFed;
+			if ( line.desiredItem != null )
+			{
+				cell_want.innerHTML = line.desiredItem.configID.Value;
+			}
+			cell_posx.innerHTML 	= line.position.x;
+			cell_posy.innerHTML 	= line.position.y;
+            cell_like.innerHTML 	= arrayLike[nameSplit[4]];
+			cell_dislike.innerHTML 	= arrayDisl[nameSplit[5]];
+		}				
+		table.deleteRow(1);	
+		table.style.display = 'block';
+	}
+	</script>
+</body>
+</html>

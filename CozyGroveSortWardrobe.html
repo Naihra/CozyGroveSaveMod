@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Cosy Grove Sort Wardrobe</title>
+	<style type="text/css">
+		a,label,input {		
+		font-family: 'Courier New', monospace;		
+		margin: 5px;
+		}
+	</style>
+	<script src="./data/function.js"></script>
+</head>
+
+<body>
+
+	<h1>Cozy Grove Sort Wardrobe</h1>	
+	
+	<label for="uploadSourceFile">Select your save</label><br>
+	<input id="uploadSourceFile" type="file" accept=".sf">
+	<br><br>	
+	
+	<input id="bt_sort" type="button" value="Sort" onclick="sort();" disabled="true">
+	<br><br>
+
+	<script>
+
+	document.getElementById("uploadSourceFile").addEventListener("change", loadSource, false);
+	
+	function start( result )
+	{
+		if ( result )
+		{
+			document.getElementById("bt_sort").disabled = false;
+		}
+		else
+		{
+			document.getElementById("bt_sort").disabled = true;		
+		}
+	}
+
+	function sort() 
+	{								
+		var array_name = [];
+		var array_sort = [];
+		var array_id   = [];
+		var array_ref  = [];		
+		var array_amnt = [];		
+		var array_equi = [];		
+
+		for (var key in json.Player.ExtraStorageCategories[0].SlotDisplayOrder )
+		{			
+			var line = json.Player.ExtraStorageCategories[0].SlotDisplayOrder[key];
+			if ( line != null )
+			{					
+				array_name.push(line.item.configID.Value);
+				array_sort.push(line.item.configID.Value);
+				
+				array_id.push(line.item.instanceID.Value);
+				array_ref.push(line.$id);
+				array_amnt.push(line.item.amount);
+				array_equi.push(line.item.equipped);		
+			}
+		}
+		
+		array_sort.sort();			
+							
+		for ( var i in array_sort )
+		{
+			var item = array_sort[i];			
+			var index = array_name.indexOf(item);
+				
+			var lineMod = json.Player.ExtraStorageCategories[0].SlotDisplayOrder[i];
+			lineMod.item.configID.Value = item;
+			
+			lineMod.item.instanceID.Value = array_id[index];
+			lineMod.item.amount = array_amnt[index];
+			lineMod.item.equipped = array_equi[index];
+			lineMod.$id = array_ref[index];			
+		
+			var lineRef = json.Player.ExtraStorageCategories[0].slots[i];
+			lineRef.$ref = array_ref[index];
+		}	
+
+		save( JSON, true );
+	}		
+	</script>
+</body>
+</html>

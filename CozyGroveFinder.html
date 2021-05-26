@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Cosy Grove Finder</title>
+	<style type="text/css">
+		a,label,input {		
+		font-family: 'Courier New', monospace;		
+		margin: 5px;
+		}
+	</style>
+	<script src="./data/function.js"></script>
+</head>
+
+<body>
+
+	<h1>Cozy Grove Finder</h1>	
+	
+	<label for="uploadSourceFile">Select your save</label><br>
+	<input id="uploadSourceFile" type="file" accept=".sf">
+	<br><br>	
+	
+	<label for="find_item">What to look for</label>
+	<select id="find_item" onchange="setCustom()" disabled="true">
+		<option value="find_custom">--Custom search--</option>
+		<option value="find_imp">Imps</option>	
+		<option value="find_collect">Forage</option>
+		<option value="find_rock">Rocks</option>
+		<option value="find_rock">Wild trees</option>			
+	</select> 
+	
+	<input id="bt_find" type="button" value="Find me!" onclick="findMe();" disabled="false">
+	<input id="input_custom" type="text" disabled="false" style="display:block">
+	<br><br>
+	
+	<canvas id="myCanvas" width="1000" height="920" style="border:1px solid #c3c3c3;">
+		Your browser does not support the canvas element.
+	</canvas>
+		
+	<script>		
+	iniPaint();
+	
+	document.getElementById("uploadSourceFile").addEventListener("change", loadSource, false );
+	document.getElementById("input_custom").addEventListener("keyup", function(event) 
+	{
+		if ( event.keyCode === 13 )
+		{
+			event.preventDefault();
+			findMe();
+		}
+	});
+	
+	function start( result )
+	{
+		if ( result )
+		{
+			document.getElementById("find_item").disabled = false;
+			document.getElementById("bt_find").disabled = false;
+			document.getElementById("input_custom").disabled = false;
+			
+			clearCanvas();
+			paintGrid();
+			paintBase( false );		
+		}
+		else
+		{
+			document.getElementById("find_item").disabled = true;
+			document.getElementById("bt_find").disabled = true;
+			document.getElementById("input_custom").disabled = true;
+		}		
+	}	
+	
+	function findMe()
+	{
+		clearCanvas();
+		paintGrid();
+		paintBase();
+		var item = document.getElementById("find_item").options[document.getElementById("find_item").selectedIndex].text;
+		
+		switch (item)
+		{
+		case "Rocks":		
+		findStart("rock_", "rock");
+		break;
+		
+		case "Wild trees":
+		findStart("wild_");
+		break;
+		
+		case "Imps":
+		findImps();
+		break;
+		
+		case "--Custom search--":
+		var item = document.getElementById("input_custom").value;
+		findCustom( item );
+		break;
+		
+		case "Forage":
+		findCollect();
+		break;
+		
+		}			
+	}
+	
+	function findStart( item, special )
+	{
+		for( var key in json.ItemsOnGroundData.OnGround )
+		{
+			var leng = item.length;
+			var line = json.ItemsOnGroundData.OnGround[key].Value;
+			
+			try {						
+			if ( line.item.configID.Value.substring(0,leng) == item )
+			{
+				pos_x = 4 * (line.position.x + offset_x);
+				pos_y = 4 * (offset_y - line.position.y);
+				
+				if ( special != null )
+				{	
+					var size = 50;
+						
+					pos_x -= size / 2;
+					pos_y -= size / 2;
+					
+					var nameSplit  = line.item.configID.Value.split("_");	
+					var imgName = nameSplit[1].concat("_", nameSplit[2], "_", line.item.state.harvestable.hasLoot );
+				
+					loadAndDraw(rutaRocks, "png", imgName, pos_x, pos_y, size, size);	
+				} 
+				else
+				{		
+					ctx.beginPath();
+					ctx.arc(pos_x, pos_y, 6, 0, 2 * Math.PI);
+					ctx.fillStyle = "black";
+					ctx.fill();
+					
+					ctx.font = "12px Courier New";
+					ctx.fillText(line.item.configID.Value, pos_x + 12, pos_y + 6); 				
+				}
+			}
+			} catch(err) { }
+		}
+	}
+	
+	function findImps()
+	{
+		var contador = 1;
+		const size = 30;
+	
+		for( var key in json.PersistedPrefabsByID )
+		{				
+			var line = json.PersistedPrefabsByID[key].Value;
+			
+			pos_x = 4 * (line.position.x + offset_x) - (size / 2);
+			pos_y = 4 * (offset_y - line.position.y) - (size / 2);
+						
+			var imgName = ( line.prefabName.includes("Heart") ) ? "imp_heart" : "imp_hungry";	
+			loadAndDraw(rutaImp, "png", imgName, pos_x, pos_y, size, size);								
+		}		
+	}
+	
+	function findCustom( item, color, image )
+	{			
+		if ( item != "" )
+		{
+			color = ( color == '' || color == null ) ? "black" : color;
+			
+			for( var key in json.ItemsOnGroundData.OnGround )
+			{			
+				var line = json.ItemsOnGroundData.OnGround[key].Value;		
+
+				try {				
+				if ( line.item.configID.Value.includes(item) )
+				{
+					pos_x = 4 * (line.position.x + offset_x);
+					pos_y = 4 * (offset_y - line.position.y);
+					
+					if ( image != null )
+					{
+						var size = 40;
+						
+						pos_x -= size / 2;
+						pos_y -= size / 2;
+					
+						var imageSplit = image.split("_");
+						var nameSplit  = line.item.configID.Value.split("_");
+						
+						//Checks are needed for leafpiles
+						if ( nameSplit.length > imageSplit[1] )
+						{										
+							if (  nameSplit[imageSplit[1]].substring(0,3) != "lut" )
+							{
+								var imgName = nameSplit[imageSplit[0]].concat("_", nameSplit[imageSplit[1]]);
+							} else
+							{
+								var imgName = nameSplit[imageSplit[0]];
+							}
+						} else
+						{
+							var imgName = nameSplit[imageSplit[0]];
+						}
+						loadAndDraw(rutaForage, "png", imgName, pos_x, pos_y, size, size);							
+					}
+					else
+					{					
+						ctx.beginPath();
+						ctx.arc(pos_x, pos_y, 6, 0, 2 * Math.PI);
+						ctx.fillStyle = color;
+						ctx.fill();
+						
+						ctx.font = "12px Courier New";
+						ctx.fillText(line.item.configID.Value, pos_x + 12, pos_y + 6); 
+					}
+				}
+				} catch(err) {}
+			}
+		}
+	}	 
+	
+	function findCollect()
+	{
+		findCustom( "shrubbery", "purple", "0_2" );
+		findCustom( "mound", "brown", "0_1" );
+		findCustom( "leafpile", "darkgreen", "3_4" );
+		findCustom( "shell", "blue" );
+		findCustom( "spirit_well" );
+	}
+	
+	function setCustom()
+	{
+		if ( document.getElementById("find_item").options[document.getElementById("find_item").selectedIndex].text == "--Custom search--" )
+		{
+			document.getElementById("input_custom").disabled = false;
+			document.getElementById("input_custom").style.display = 'block';
+		}
+		else
+		{
+			document.getElementById("input_custom").disabled = true;
+			document.getElementById("input_custom").style.display = 'none';			
+		}
+	}
+	</script>
+</body>
+</html>
