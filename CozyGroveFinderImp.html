@@ -31,7 +31,7 @@
 	</canvas>
 
 	<div class="table">
-	<table class="sortable" id="impTable">
+	<table class="sortable" id="impTable" style="display:none">
 	<thead>
 		<tr>
 			<th>#</th>
@@ -133,7 +133,8 @@
 				}
 			}						
 		}
-		table.deleteRow(1);				
+		table.deleteRow(1);		
+		table.style.display = 'block';		
 	}
 	
 	function changeLine()
