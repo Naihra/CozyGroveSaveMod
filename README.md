@@ -9,10 +9,10 @@ These apps don't alter the save file in any way, they only take information from
 ### Animal List
 Shows all the animals on map and lists their details, including if they are hungry.
 
-The food names are the code ones - Might translate into the in-game names, but they are logical enough to understand.
+The food names are the in-save coded ones.
 
 ### Finder
-Locates any item that's on the group.
+Locates any item that's on the ground.
 
 Default option allows to search any string, including "_" to show everything. Hit Enter or press the button to search.
 
