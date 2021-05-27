@@ -5,6 +5,7 @@ I've only used these with a save from the Steam version, but I don't see any rea
 
 # How to use
 You can download everything as a zip, and unzip it anywhere, or just the html you want, but the DATA folder needs to be in the same directory. 
+
 ![image](https://user-images.githubusercontent.com/84879535/119782142-1d5a6000-becc-11eb-9f7c-b53b5b9b8d90.png)
 
 Then run the .html in any browser. 
@@ -47,6 +48,8 @@ When there are no options the order is alphabetical.
 Shells, fish and flowers can be grouped by color or rarity.
 
 Only the marked categories will be sorted.
+
+![image](https://user-images.githubusercontent.com/84879535/119863950-6b965000-bf1a-11eb-881f-8715cd234e33.png)
 
 ### Sort Wardrobe
 Sorts the clothes in wardrobe alphabetically, which puts the items of the same category together.
