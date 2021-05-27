@@ -3,6 +3,9 @@ https://support.spryfox.com/hc/en-us/articles/1500003981321-Where-can-I-find-my-
 
 I've only used these with a save from the Steam version, but I don't see any reason why they wouldn't work with Apple Arcade as well, as long as you can access the save files.
 
+# How to use
+The first time download everything as a zip, and unzip it anywhere. Then run the .html you want in any browser.
+
 ## Show data
 These apps don't alter the save file in any way, they only take information from it and show it.
 
