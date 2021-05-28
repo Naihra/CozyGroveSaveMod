@@ -18,6 +18,8 @@ Shows all the animals on map and lists their details, including if they are hung
 
 The food names are the in-save coded ones.
 
+The table can be sorted by clicking on the header.
+
 ### Finder
 Locates any item that's on the ground.
 
