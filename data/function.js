@@ -2,13 +2,15 @@ function save( JSON, checkSave )
 {			
 	if ( checkSave == false )
 	{
-		alert("Nada que guardar");
+		alert("No changes were made");
 		return;
 	}
 	
-	const jsonStr2  = JSON.stringify(json);
+	var jsonStr2  = JSON.stringify(json);	
+	//Found a character that was making the encode fail
+	jsonStr2 = jsonStr2.replace("—","-");	
 	const outputStr = `${fileTkn[0]},${window.btoa(jsonStr2)}`;
-	
+		
 	const element = document.createElement('a');
 	element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(outputStr));
 	element.setAttribute('download', "cg_save.sf");
@@ -36,8 +38,7 @@ function loadSource()
 			const jsonStr = window.atob(fileTkn[1]);
 			json = JSON.parse(jsonStr);		
 			run = true;
-		}
-		catch(err)
+		} catch(err)
 		{				
 			alert("File not supported");
 			run = false;
