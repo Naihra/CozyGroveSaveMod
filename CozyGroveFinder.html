@@ -26,7 +26,8 @@
 		<option value="find_imp">Imps</option>	
 		<option value="find_collect">Forage</option>
 		<option value="find_rock">Rocks</option>
-		<option value="find_rock">Wild trees</option>			
+		<option value="find_wild">Wild trees</option>			
+		<option value="find_crit">Critters</option>			
 	</select> 
 	
 	<input id="bt_find" type="button" value="Find me!" onclick="findMe();" disabled="false">
@@ -100,6 +101,9 @@
 		findCollect();
 		break;
 		
+		case "Critters":
+		findCritters();
+		break;		
 		}			
 	}
 	
@@ -225,6 +229,25 @@
 		findCustom( "leafpile", "darkgreen", "3_4" );
 		findCustom( "shell", "blue" );
 		findCustom( "spirit_well" );
+	}
+	
+	function findCritters()
+	{
+		for( var key in json.CrittersByID )
+		{		
+			var line = json.CrittersByID[key].Value;	
+			
+			pos_x = 4 * (line.position.x + offset_x);
+			pos_y = 4 * (offset_y - line.position.y);
+			
+			ctx.beginPath();
+			ctx.arc(pos_x, pos_y, 6, 0, 2 * Math.PI);
+			ctx.fillStyle = "darkred";
+			ctx.fill();
+			
+			ctx.font = "12px Courier New";
+			ctx.fillText(line.configID.Value, pos_x + 12, pos_y + 6); 			
+		}
 	}
 	
 	function setCustom()
