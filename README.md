@@ -47,11 +47,13 @@ Sorts the items in collection.
 
 When there are no options the order is alphabetical.
 
-Shells, fish and flowers can be grouped by color or rarity.
+Shells, fish, flowers and critters can be grouped in different ways.
 
 Only the marked categories will be sorted.
 
-![image](https://user-images.githubusercontent.com/84879535/119863950-6b965000-bf1a-11eb-881f-8715cd234e33.png)
+![Sort](https://user-images.githubusercontent.com/84879535/120906050-95582100-c656-11eb-8a7a-eab422e7800a.png)
+
+Grouped by type/season, type/color, color.
 
 ### Sort Wardrobe
 Sorts the clothes in wardrobe alphabetically, which puts the items of the same category together.
