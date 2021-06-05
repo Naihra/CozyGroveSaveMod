@@ -26,23 +26,24 @@
 	<input type="checkbox" id="orderShells">
 	<label for="orderShells">Shells</label>
 	<select id="agrupShells">
-		<option value="ashRarity">Group by rarity</option>
-		<option value="ashColour">Group by colour</option>
+		<option value="ashRarity">Group by type and season</option>
+		<option value="ashRarCol">Group by type and color</option>
+		<option value="ashColour">Group by color</option>
 	</select> 
 	<br>
 	<input type="checkbox" id="orderFishs">
 	<label for="orderFishs">Fishs</label> 
 	<select id="agrupFishes">
-		<option value="afiType">Group by season/type</option>
-		<option value="afiSeason">Group by season/rarity</option>
-		<option value="afiRarity">Group by rarity</option>		
+		<option value="afiType">Group by type</option>
+		<option value="afiRarity">Group by color</option>		
 	</select> 
 	<br>
 	<input type="checkbox" id="orderFlowers">
 	<label for="orderFlowers">Flowers</label>
 	<select id="agrupFlowers">
-		<option value="aflRarity">Group by rarity</option>
-		<option value="aflColour">Group by colour</option>
+		<option value="aflRarity">Group by type and rarity</option>
+		<option value="aflRarCol">Group by type and color</option>
+		<option value="aflColour">Group by color</option>
 	</select> 
 	<br>
 	<input type="checkbox" id="orderFoods">
@@ -50,6 +51,14 @@
 	<br>
 	<input type="checkbox" id="orderMats">
 	<label for="orderMats">Materials</label> 
+	<br>	
+	<input type="checkbox" id="orderCritters">
+	<label for="orderCritters">Critters</label> 
+	<select id="agrupCritters">
+		<option value="acrSeason">Group by type and season</option>
+		<option value="acrSeaCol">Group by type and color</option>
+		<option value="acrColour">Group by color</option>
+	</select> 
 	<br>	
 	
 	<input id="bt_sort" type="button" value="Sort" onclick="sort();" disabled ="true">
@@ -91,7 +100,7 @@
 		}
 		if ( document.getElementById("orderFoods").checked || checkAll )
 		{
-			sortCategory("foods");			
+			sortCustom( "foods", "afo" );			
 			checkSave = true;
 		}
 		if ( document.getElementById("orderMats").checked || checkAll )
@@ -102,6 +111,11 @@
 		if ( document.getElementById("orderShells").checked || checkAll )
 		{
 			sortCustom( "shells", document.getElementById("agrupShells").options[document.getElementById("agrupShells").selectedIndex].value );
+			checkSave = true;
+		}	
+		if ( document.getElementById("orderCritters").checked || checkAll )
+		{
+			sortCustom( "critters", document.getElementById("agrupCritters").options[document.getElementById("agrupCritters").selectedIndex].value );
 			checkSave = true;
 		}		
 		save( JSON, checkSave );			
@@ -122,20 +136,7 @@
 			delete json.PlayerCollections.itemGroups[cat].donatedItemConfigIdMap[key];
 		}
 		
-		array_sort.sort();			
-		var obj = json.PlayerCollections.itemGroups[cat].donatedItemConfigIdMap;
-							
-		for ( var i in array_sort )
-		{
-			var item = array_sort[i];			
-			var index = array_name.indexOf(item);
-				
-			var start = '{"';
-			var str = start.concat(item,'":{"foundTimestamp":', array_date[index],',"hasCollectedReward":true}}');
-			var conv = JSON.parse(str);
-			
-			Object.assign(obj, conv);			
-		}		
+		sortAppend( array_sort, array_name, array_name, array_date, cat );		
 	}
 	
 	function sortCustom ( cat, sort )
@@ -167,11 +168,27 @@
 				
 				nameSplit[0] = "shell";
 				nameSplit[2] = checkRarity;
-				//Column added so it matches flowers
+				//Column added so it matches that column 5 = second part of season name
 				nameSplit.unshift("shell");
 			}
 			
-			//Season, same for all
+			//For critters first have to check that [3] is the rarity if not is the 2nd part of [2] so we concatenate
+			if ( sort.substring(0,3) == "acr" )
+			{
+				do
+				{
+					checkRarity = arrayRarity.indexOf(nameSplit[3]);
+					if ( checkRarity == -1 )
+					{
+						nameSplit[2] += nameSplit[3];
+						nameSplit.splice(3,1);
+					}	
+				}
+				while ( checkRarity == -1 );
+				nameSplit[3] = checkRarity;
+			}
+			
+			//Check for early/late seasons, same for all
 			if ( nameSplit.length == 6 )
 			{
 				nameSplit[4] += nameSplit[5];
@@ -179,10 +196,23 @@
 			}
 			nameSplit[4] = arrayLetter[arraySeason.indexOf(nameSplit[4])];
 			
-			//Flower and shells by color, swap rarity/season
-			if ( sort == "aflColour" || sort == "ashColour" )
+			//Flower and shells
+			if ( sort.substring(0,3) == "afl" || sort.substring(0,3) == "ash" )
 			{
-				nameSplit.splice(3, 2, nameSplit[4], nameSplit[3] );
+				switch( sort.substring(3,9) )
+				{
+					case "Rarity":
+						order(nameSplit, 2,3,4 );
+					break;
+					
+					case "RarCol":
+						order(nameSplit, 2,4,3);
+					break;
+					
+					case "Colour":
+						order(nameSplit, 4,2,3);
+					break;					
+				}				
 			}			
 			
 			//For all fishes
@@ -193,18 +223,39 @@
 				switch (sort)
 				{
 					case "afiRarity":
-						nameSplit.splice(3, 2, nameSplit[4], nameSplit[3] );
-					break;
-					
-					case "afiSeason":
-						nameSplit.splice(2, 3, nameSplit[4], nameSplit[2], nameSplit[3] );					
+						order(nameSplit, 2,4,3);
 					break;
 					
 					case "afiType":
-						nameSplit.splice(2, 3, nameSplit[4], nameSplit[3], nameSplit[2] );
+						order(nameSplit, 4,3,2);
 					break;
 				}			
 			}					
+			
+			//For critters
+			if ( sort.substring(0,3) == "acr" )
+			{
+				switch( sort.substring(3,9) )
+				{
+					case "Season":
+						order(nameSplit, 2,4,3 );		
+					break;                              
+					                                    
+					case "SeaCol":
+						order(nameSplit, 2,3,4);
+					break;
+					
+					case "Colour":
+						order(nameSplit, 3,2,4);
+					break;					
+				}				
+			}			
+			
+			//For foods
+			if ( sort.substring(0,3) == "afo" && ( nameSplit[2] == "bird" || nameSplit[2] == "deer" || nameSplit[2] == "imp" ) )
+			{
+				nameSplit.splice(1, 2, nameSplit[2], nameSplit[1] );
+			}
 			
 			array_code.push(nameSplit.join(""));
 			array_sort.push(nameSplit.join(""));
@@ -212,19 +263,29 @@
 			delete json.PlayerCollections.itemGroups[cat].donatedItemConfigIdMap[key];
 		}
 		
+		sortAppend( array_sort, array_code, array_name, array_date, cat );
+	}
+
+	function sortAppend( array_sort, array_code, array_name, array_date, cat )
+	{
 		array_sort.sort();			
 		var obj = json.PlayerCollections.itemGroups[cat].donatedItemConfigIdMap;
 							
 		for ( var i in array_sort )
-		{	
+		{
 			var index = array_code.indexOf(array_sort[i]);
 				
 			var start = '{"';
 			var str = start.concat(array_name[index],'":{"foundTimestamp":', array_date[index],',"hasCollectedReward":true}}');
 			var conv = JSON.parse(str);
 			
-			Object.assign(obj, conv);		
-		 }
+			Object.assign(obj, conv);			
+		}		
+	}
+	
+	function order( param, A, B, C )
+	{
+		param.splice(2, 3, param[A], param[B], param[C] );	
 	}
 	
 	function setOrderAll()
@@ -236,6 +297,7 @@
 		document.getElementById("orderFoods").disabled = checkAll.checked;
 		document.getElementById("orderMats").disabled = checkAll.checked;
 		document.getElementById("orderShells").disabled = checkAll.checked;
+		document.getElementById("orderCritters").disabled = checkAll.checked;
 	}
 	
 	</script>
