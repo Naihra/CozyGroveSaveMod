@@ -40,6 +40,8 @@ In the current version you get 3 lower rank essences for each one you recycle.
 They max at 50, if it were to generate more than that the excess will be lost, but different stacks are treated separatedly.
 
 ### Furniture Recycler
+Turns furniture into its corresponding crafting recipe.
+
 Reads the furniture items from inventory (not storage) and present a list so the items to be recycled can be selected by clicking on the line. If the recipe has already been obtained it will be marked with "Have".
 
 ![image](https://user-images.githubusercontent.com/84879535/120932385-d18e8e80-c6f5-11eb-9c96-f90dec449aac.png)
