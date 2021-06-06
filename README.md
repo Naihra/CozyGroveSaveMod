@@ -27,9 +27,6 @@ Default option allows to search any string, including "_" to show everything. Hi
 
 The Imp option is not 100% reliable, sometimes imps just don't spawn where the save says they have. Or they disappear at reload.
 
-### Imp Finder
-The Imp finder option of the Finder for faster access.
-
 ## Modify data
 These apps create a new save file from the information of the one you load. My recommendation is load the save in another slot. I've used all 3 of them many times now and haven't had any issues, but use them under your own responsability and always make a copy before.
 
