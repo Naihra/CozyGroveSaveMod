@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Cosy Grove Furniture Recycler</title>
+	<style type="text/css">
+		a,label,input {		
+		font-family: 'Courier New', monospace;		
+		margin: 5px;
+		}
+		
+		table, th, td {
+		border:1px solid #c3c3c3;
+		}
+	</style>
+	<script src="./data/function.js"></script>
+</head>
+
+<body>
+
+	<h1>Cozy Grove Furniture Recycler</h1>	
+	
+	<label for="uploadSourceFile">Select your save</label><br>
+	<input id="uploadSourceFile" type="file" accept=".sf">
+	<br><br>
+
+<div class="table">
+	<table id="recycleTable" style="display:none">
+	<thead>
+		<tr>
+			<th>Recycle</th>
+			<th>Pos</th>
+			<th>Item</th>
+			<th>#</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+		</tr>
+	</tbody>
+	</table>
+	</div>
+	
+	<input id="bt_recycle" type="button" value="Recycle" onclick="recycle();" disabled ="true">
+	<br><br>
+
+	<script>
+	
+	document.getElementById("uploadSourceFile").addEventListener("change", loadSource, false);
+	table = document.getElementById("recycleTable");	
+	table.addEventListener("click", markRecycle,false);
+	
+	function start( result )
+	{
+		if ( result )
+		{				
+			readInventory();
+		}
+	}
+	
+	function readInventory()
+	{			
+		var contador = 1
+	
+		for (var key in json.Player.Inventory.SlotDisplayOrder)
+		{
+			var line = json.Player.Inventory.SlotDisplayOrder[key];
+			
+			if (line != null ) {			
+			
+				var nameSplit = line.item.configID.Value.split("_");
+								
+				if ( ( nameSplit[0] == "dc" || nameSplit[0].includes("deco") ) && nameSplit[nameSplit.length - 1] != "craftingRecipe" )
+				{
+					contador += 1;				
+					var row 	   = table.insertRow(contador);				
+					var cellCheck  = row.insertCell(0);
+					var cellId     = row.insertCell(1);
+					var cellName   = row.insertCell(2);
+					var cellNo     = row.insertCell(3);
+					
+					//PENDIENTE
+					//Si ya existe la receta poner "Have" para que no deje hacer nada
+					for ( var key2 in json.SpiritsByID[1].Value.professionStates.crafter.inventory.slots )
+					{
+						var line2 = json.SpiritsByID[1].Value.professionStates.crafter.inventory.slots[key2].item;
+						
+						if ( line2.configID.Value == line.item.configID.Value )
+						{
+							cellCheck.innerHTML = "Have";
+							break;
+						}
+					}
+					
+					cellId.innerHTML     = key;
+					cellName.innerHTML   = line.item.configID.Value;
+					cellNo.innerHTML     = line.amount;
+				}
+			}				
+		}		
+		
+		if ( table.tBodies[0].rows.length > 1 )
+		{		
+			table.deleteRow(1);	
+			table.style.display = 'block';		
+			document.getElementById("bt_recycle").disabled = false;
+		}
+		else
+		{
+			table.style.display = 'none';		
+			document.getElementById("bt_recycle").disabled = true;
+			alert("No valid item found");
+		}
+	}	
+
+	function recycle() {		
+	
+		var checkSave = false;			
+	
+		for (var key in table.tBodies[0].rows)
+		{
+			if ( key == "length") break;
+			
+			var line = table.tBodies[0].rows[key].cells;
+			if ( line[0].innerHTML == "X" )
+			{
+				checkSave = true;				
+				json.Player.Inventory.SlotDisplayOrder[line[1].innerHTML].item.configID.Value += "_craftingRecipe";
+				json.Player.Inventory.SlotDisplayOrder[line[1].innerHTML].amount = 1;
+			}								
+		}
+		
+		if ( checkSave )
+		{
+			document.getElementById("bt_recycle").disabled = true;					
+			save( JSON, checkSave );			
+		}				
+	}
+		
+	function markRecycle(e)
+	{
+		var element = e.srcElement || e.target;
+		if(element.nodeName != 'TD') return;		
+		while(element.nodeName != 'TR') element = element.parentNode;
+		
+		var value = table.rows[element.rowIndex].cells[0].innerHTML;		
+		if ( value == "X" )
+		{
+			table.rows[element.rowIndex].cells[0].innerHTML = "";
+		}
+		else if ( value == "" )
+		{
+			table.rows[element.rowIndex].cells[0].innerHTML = "X";
+		}
+	}
+	
+	</script>
+</body>
+</html>

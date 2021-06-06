@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Cosy Grove Inventory Expander</title>
+	<style type="text/css">
+		a,label,input {		
+		font-family: 'Courier New', monospace;		
+		margin: 5px;
+		}
+	</style>
+	<script src="./data/function.js"></script>
+</head>
+
+<body>
+
+	<h1>Cozy Grove Inventory Expander</h1>	
+	
+	<label for="uploadSourceFile">Select your save</label><br>
+	<input id="uploadSourceFile" type="file" accept=".sf">
+		
+	<h3>Money</h3>
+	
+	<label>Donate</label>
+	<input id="moneyDonate" type="int" size="10" disabled="true"> 
+	<label>/</label>
+	<input id="moneyTotal"  type="int" size="10" disabled="true"> 
+	
+	
+	<h2>Backpack</h2>
+	<label>Current size</label>
+	<input id="backpackMax" type="int" size="3" disabled="true"> 
+	<label>Empty spaces</label>
+	<input id="backpackEmpty" type="int" size="3" disabled="true"> 
+	<br>
+	<label>Add or remove rows</label>
+	<input id="backpackRows"  type="int" size="3" disabled="true"> 	
+	
+	<h2>Storage</h2>
+	<label>Current size</label>
+	<input id="storageMax" type="int" size="4" disabled="true"> 
+	<label>Empty spaces</label>
+	<input id="storageEmpty" type="int" size="4" disabled="true"> 
+	<br>
+	<label>Add or remove rows</label>
+	<input id="storageRows"  type="int" size="3" disabled="true"> 
+	
+	<h2>Save</h2>
+	<input id="bt_expand" type="button" value="Expand" onclick="expand();" disabled ="true">
+	<br><br>
+
+	<script>
+	
+	document.getElementById("uploadSourceFile").addEventListener("change", loadSource, false);
+	
+	function start( result )
+	{
+		if ( result )
+		{
+			document.getElementById("bt_expand").disabled 	 = false;			
+			document.getElementById("moneyDonate").disabled  = false;			
+			document.getElementById("backpackRows").disabled = false;			
+			document.getElementById("storageRows").disabled  = false;			
+		
+			readData()
+		}
+	}
+	
+	function readData()
+	{		
+		document.getElementById("moneyTotal").value  = json.Player.Wallet.Currencies.cash;
+		document.getElementById("backpackMax").value = json.Player.Inventory.maxInventorySize;
+		document.getElementById("storageMax").value  = json.Player.Storage.maxInventorySize;	
+		
+		readNull( "Inventory", "backpackEmpty" );
+		readNull( "Storage", "storageEmpty" );		
+	}	
+
+	function expand() {		
+	
+		var checkSave = false;	
+		var moneyDonate  = document.getElementById("moneyDonate").value;
+		var backpackRows = document.getElementById("backpackRows").value;
+	    var backpackEmpty = document.getElementById("backpackEmpty").value;		
+	    var storageRows  = document.getElementById("storageRows").value;		
+	    var storageEmpty = document.getElementById("storageEmpty").value;		
+		
+		if ( moneyDonate > json.Player.Wallet.Currencies.cash )
+		{
+			alert("Not enough money");	
+			return;
+		} else if ( moneyDonate < 0 )
+		{
+			alert("Sorry, no refunds");
+			return;
+		} else if ( moneyDonate > 0 )
+		{
+			json.Player.Wallet.Currencies.cash -= moneyDonate;
+		}
+		
+		var checkBack = modify( "Inventory", backpackRows, backpackEmpty, "backpackMax", "backpackEmpty" );
+		if (typeof checkBack === 'undefined')
+		{
+			return;
+		}		
+		
+		var checkStor = modify( "Storage",   storageRows,  storageEmpty,  "storageMax",  "storageEmpty" );	
+		if (typeof checkStor === 'undefined')
+		{
+			return;
+		}	
+		
+		checkSave = ( checkBack || checkStor ) ? true : false;		
+		save( JSON, checkSave );	
+			
+	}
+	
+	function readNull( location, field )
+	{
+		var cont = 0;
+		for ( var key in json.Player[location].SlotDisplayOrder )
+		{
+			var line = json.Player[location].SlotDisplayOrder[key];
+			cont = ( line == null ) ? cont += 1 : cont;
+		}
+		document.getElementById(field).value = cont;
+	}
+	
+	function modify( location, rows, empty, fieldMax, fieldEmpty )
+	{
+		var backObj = json.Player[location].SlotDisplayOrder;
+		
+		if ( rows > 0 )
+		{			
+			for (var i = 0; i < 4 * rows; i++)
+			{				
+				backObj.push( null );
+			}
+			
+			json.Player[location].maxInventorySize += 4 * rows;
+			document.getElementById(fieldMax).value = json.Player[location].maxInventorySize;	
+			document.getElementById(fieldEmpty).value = parseInt(empty) + 4 * rows;
+			return true;
+		} 
+		else if ( rows < 0 ) 
+		{
+			rows *= -1;			
+			if ( rows <= Math.trunc( empty / 4 ) )
+			{
+				var slots = 4 * rows;
+				var cont  = 0;
+				var i     = json.Player[location].maxInventorySize - 1;
+				
+				while ( cont < slots )
+				{
+					var line = json.Player[location].SlotDisplayOrder[i];
+					if ( line == null )
+					{
+						backObj.splice(i, 1)
+						cont++;
+					}					
+					i--;					
+				}
+				
+				json.Player[location].maxInventorySize -= slots;
+				document.getElementById(fieldMax).value = json.Player[location].maxInventorySize;
+				document.getElementById(fieldEmpty).value -= slots;
+				return true;
+			} 
+			else
+			{ 
+				alert("Not enough empty spaces to delete"); return; 
+			}
+		} else  { return false }
+	}
+	
+	</script>
+</body>
+</html>

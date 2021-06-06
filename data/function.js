@@ -38,6 +38,7 @@ function loadSource()
 			const jsonStr = window.atob(fileTkn[1]);
 			json = JSON.parse(jsonStr);		
 			run = true;
+			document.getElementById("uploadSourceFile").disabled = true;
 		} catch(err)
 		{				
 			alert("File not supported");
