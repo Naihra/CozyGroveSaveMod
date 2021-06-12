@@ -1,4 +1,4 @@
-# DON'T USE the Sort Wardrobe with the current steam beta (version 2.0). It breaks the save.
+# Sort Wardrobe might not work correctly, please ALWAYS load it in a new slot. If triggered, the issue will cause the save to not load at all
 
 # Save location
 https://support.spryfox.com/hc/en-us/articles/1500003981321-Where-can-I-find-my-Cozy-Grove-logs-and-save-files-
