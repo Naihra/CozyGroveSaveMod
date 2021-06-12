@@ -1,3 +1,5 @@
+# DON'T USE the Sort Wardrobe with the current steam beta (version 2.0). It breaks the save.
+
 # Save location
 https://support.spryfox.com/hc/en-us/articles/1500003981321-Where-can-I-find-my-Cozy-Grove-logs-and-save-files-
 
