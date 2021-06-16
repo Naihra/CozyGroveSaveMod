@@ -61,11 +61,6 @@ Only the marked categories will be sorted.
 
 Grouped by type/season, type/color, color.
 
-### Sort Wardrobe
-Sorts the clothes in wardrobe alphabetically, which puts the items of the same category together.
-
-Unfortunately there is no pattern I could find to sort them in other way.
-
 ### Inventory Expander
 Expands or reduces the size of the backpack and the storage. To make it less of a cheat there is an optional "Donation" field, where you can input the amount you want to spend on the upgrade.
 
