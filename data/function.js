@@ -85,7 +85,7 @@ function iniPaint()
 	rutaForage 	= "./data/forage/"
 	rutaRocks 	= "./data/rock/"
 	offset_x 	= 100;
-	offset_y 	= 180;	
+	offset_y 	= 200;	
 }
 
 function clearCanvas()
@@ -113,10 +113,13 @@ function paintBase( fences )
 	{
 		var line = json.SpiritsByID[key].Value;
 		
-		pos_x = 4 * (line.location.x + offset_x);
-		pos_y = 4 * (offset_y - line.location.y);
-							
-		loadAndDraw(rutaBase, "jpg", line.characterID.Value, pos_x - (size / 2), pos_y - (size / 2), size, size);
+		if ( line.characterID.Value.substring(0,6) != "travel" )
+		{		
+			pos_x = 4 * (line.location.x + offset_x);
+			pos_y = 4 * (offset_y - line.location.y);
+								
+			loadAndDraw(rutaBase, "jpg", line.characterID.Value, pos_x - (size / 2), pos_y - (size / 2), size, size);
+		}
 	}	
 	
 	//Ancient lamps		

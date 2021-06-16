@@ -20,21 +20,21 @@
 	<input id="uploadSourceFile" type="file" accept=".sf">
 	<br><br>	
 	
-	<label for="find_item">What to look for</label>
-	<select id="find_item" onchange="setCustom()" disabled="true">
-		<option value="find_custom">--Custom search--</option>
-		<option value="find_imp">Imps</option>	
-		<option value="find_collect">Forage</option>
-		<option value="find_rock">Rocks</option>
-		<option value="find_wild">Wild trees</option>			
-		<option value="find_crit">Critters</option>			
+	<label for="findItem">What to look for</label>
+	<select id="findItem" onchange="setCustom()" disabled="true">
+		<option value="findCustom">--Custom search--</option>
+		<option value="findImp">Imps</option>	
+		<option value="findFora">Forage</option>
+		<option value="findRock">Rocks</option>
+		<option value="findWild">Wild trees</option>			
+		<option value="findCrit">Critters</option>				
 	</select> 
 	
-	<input id="bt_find" type="button" value="Find me!" onclick="findMe();" disabled="false">
-	<input id="input_custom" type="text" disabled="false" style="display:block">
+	<input id="btFind" type="button" value="Find me!" onclick="findMe();" disabled="false">
+	<input id="inputCustom" type="text" disabled="false" style="display:block">
 	<br><br>
 	
-	<canvas id="myCanvas" width="1000" height="920" style="border:1px solid #c3c3c3;">
+	<canvas id="myCanvas" width="1000" height="1000" style="border:1px solid #c3c3c3;">
 		Your browser does not support the canvas element.
 	</canvas>
 		
@@ -42,7 +42,7 @@
 	iniPaint();
 	
 	document.getElementById("uploadSourceFile").addEventListener("change", loadSource, false );
-	document.getElementById("input_custom").addEventListener("keyup", function(event) 
+	document.getElementById("inputCustom").addEventListener("keyup", function(event) 
 	{
 		if ( event.keyCode === 13 )
 		{
@@ -55,9 +55,9 @@
 	{
 		if ( result )
 		{
-			document.getElementById("find_item").disabled = false;
-			document.getElementById("bt_find").disabled = false;
-			document.getElementById("input_custom").disabled = false;
+			document.getElementById("findItem").disabled = false;
+			document.getElementById("btFind").disabled = false;
+			document.getElementById("inputCustom").disabled = false;
 			
 			clearCanvas();
 			paintGrid();
@@ -65,9 +65,9 @@
 		}
 		else
 		{
-			document.getElementById("find_item").disabled = true;
-			document.getElementById("bt_find").disabled = true;
-			document.getElementById("input_custom").disabled = true;
+			document.getElementById("findItem").disabled = true;
+			document.getElementById("btFind").disabled = true;
+			document.getElementById("inputCustom").disabled = true;
 		}		
 	}	
 	
@@ -76,32 +76,32 @@
 		clearCanvas();
 		paintGrid();
 		paintBase();
-		var item = document.getElementById("find_item").options[document.getElementById("find_item").selectedIndex].text;
+		var item = document.getElementById("findItem").options[document.getElementById("findItem").selectedIndex].value;
 		
 		switch (item)
 		{
-		case "Rocks":		
+		case "findRock":		
 		findStart("rock_", "rock");
 		break;
 		
-		case "Wild trees":
+		case "findWild":
 		findStart("wild_");
 		break;
 		
-		case "Imps":
+		case "findImp":
 		findImps();
 		break;
 		
-		case "--Custom search--":
-		var item = document.getElementById("input_custom").value;
+		case "findCustom":
+		var item = document.getElementById("inputCustom").value;
 		findCustom( item );
 		break;
 		
-		case "Forage":
-		findCollect();
+		case "findFora":
+		findForage();
 		break;
 		
-		case "Critters":
+		case "findCrit":
 		findCritters();
 		break;		
 		}			
@@ -149,18 +149,40 @@
 	
 	function findImps()
 	{
-		var contador = 1;
 		const size = 30;
 	
 		for( var key in json.PersistedPrefabsByID )
 		{				
 			var line = json.PersistedPrefabsByID[key].Value;
 			
-			pos_x = 4 * (line.position.x + offset_x) - (size / 2);
-			pos_y = 4 * (offset_y - line.position.y) - (size / 2);
-						
-			var imgName = ( line.prefabName.includes("Heart") ) ? "imp_heart" : "imp_hungry";	
-			loadAndDraw(rutaImp, "png", imgName, pos_x, pos_y, size, size);								
+			if ( line.prefabName.substring(0,4) == "Imps" )
+			{			
+				pos_x = 4 * (line.position.x + offset_x) - (size / 2);
+				pos_y = 4 * (offset_y - line.position.y) - (size / 2);
+							
+				var nameSplit = line.prefabName.split("_");
+				var imgName = nameSplit[0].concat(nameSplit[1]);
+				loadAndDraw(rutaImp, "png", imgName, pos_x, pos_y, size, size);			
+			}
+		}		
+	}
+	
+	function findSkip()
+	{
+		const size = 30;
+	
+		for( var key in json.PersistedPrefabsByID )
+		{				
+			var line = json.PersistedPrefabsByID[key].Value;
+			
+			if ( line.prefabName.substring(0,4) != "Imps" )
+			{			
+				pos_x = 4 * (line.position.x + offset_x) - (size / 2);
+				pos_y = 4 * (offset_y - line.position.y) - (size / 2);
+					
+				var imgName = line.data.configID;				
+				loadAndDraw(rutaForage, "png", imgName, pos_x, pos_y, size, size);			
+			}
 		}		
 	}
 	
@@ -172,7 +194,11 @@
 			
 			for( var key in json.ItemsOnGroundData.OnGround )
 			{			
-				var line = json.ItemsOnGroundData.OnGround[key].Value;		
+				var line = json.ItemsOnGroundData.OnGround[key].Value;	
+				var nameSplit  = line.item.configID.Value.split("_");
+				
+				if ( item != "shell" || ( item == "shell" && nameSplit[nameSplit.length - 1] != "model" ) )
+				{
 
 				try {				
 				if ( line.item.configID.Value.includes(item) )
@@ -180,15 +206,14 @@
 					pos_x = 4 * (line.position.x + offset_x);
 					pos_y = 4 * (offset_y - line.position.y);
 					
-					if ( image != null )
+					if ( image != null && image != "" )
 					{
 						var size = 40;
 						
 						pos_x -= size / 2;
 						pos_y -= size / 2;
 					
-						var imageSplit = image.split("_");
-						var nameSplit  = line.item.configID.Value.split("_");
+						var imageSplit = image.split("_");						
 						
 						//Checks are needed for leafpiles
 						if ( nameSplit.length > imageSplit[1] )
@@ -214,24 +239,16 @@
 						ctx.fill();
 						
 						ctx.font = "12px Courier New";
-						ctx.fillText(line.item.configID.Value, pos_x + 12, pos_y + 6); 
+						ctx.fillText(line.item.configID.Value, pos_x + 12, pos_y + 6); 						
 					}
 				}
 				} catch(err) {}
+				}
 			}
 		}
 	}	 
 	
-	function findCollect()
-	{
-		findCustom( "shrubbery", "purple", "0_2" );
-		findCustom( "mound", "brown", "0_1" );
-		findCustom( "leafpile", "darkgreen", "3_4" );
-		findCustom( "shell", "blue" );
-		findCustom( "spirit_well" );
-	}
-	
-	function findCritters()
+	function findCritters( collection )
 	{
 		for( var key in json.CrittersByID )
 		{		
@@ -250,17 +267,27 @@
 		}
 	}
 	
+	function findForage()
+	{
+		findCustom( "shrubbery", "purple", "0_2" );
+		findCustom( "mound", "brown", "0_1" );
+		findCustom( "leafpile", "darkgreen", "3_4" );
+		findCustom( "shell", "blue" );
+		findCustom( "spirit_well" );
+		findSkip();
+	}
+	
 	function setCustom()
 	{
-		if ( document.getElementById("find_item").options[document.getElementById("find_item").selectedIndex].text == "--Custom search--" )
+		if ( document.getElementById("findItem").options[document.getElementById("findItem").selectedIndex].value == "findCustom" )
 		{
-			document.getElementById("input_custom").disabled = false;
-			document.getElementById("input_custom").style.display = 'block';
+			document.getElementById("inputCustom").disabled = false;
+			document.getElementById("inputCustom").style.display = 'block';
 		}
 		else
 		{
-			document.getElementById("input_custom").disabled = true;
-			document.getElementById("input_custom").style.display = 'none';			
+			document.getElementById("inputCustom").disabled = true;
+			document.getElementById("inputCustom").style.display = 'none';			
 		}
 	}
 	</script>
