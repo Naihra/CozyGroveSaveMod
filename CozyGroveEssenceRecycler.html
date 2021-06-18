@@ -21,28 +21,42 @@
 	<br><br>
 
 	<img src="./data/essence/memory_2_bird.jpg" alt="Happy bird essence" width="100" height="100" >
-	<input id="out_bird2" type="int" size="2" disabled="true"> 
-
+	<input id="check_m2b" type="checkbox" checked>
+	<input id="out_m2b" type="int" size="2" disabled="true"> 
+	
 	<img src="./data/essence/memory_2_deer.jpg" alt="Happy deer essence" >
-	<input id="out_deer2" type="int" size="2" disabled="true"> 
+	<input id="check_m2d" type="checkbox" checked>
+	<input id="out_m2d" type="int" size="2" disabled="true"> 
 	
 	<img src="./data/essence/memory_2_imp.jpg" alt="Happy imp essence" >
-	<input id="out_imp2" type="int" size="2" disabled="true"> 
+	<input id="check_m2i" type="checkbox" checked>
+	<input id="out_m2i" type="int" size="2" disabled="true"> 
+	
+	<img src="./data/essence/green_fancy.png" alt="Fancy greens" >
+	<input id="check_g2" type="checkbox" checked>
+	<input id="out_g2" type="int" size="2" disabled="true"> 
 	<br>
 	
 	<img src="./data/essence/memory_3_bird.jpg" alt="Joyous bird essence" >
-	<input id="out_bird3" type="int" size="2" disabled="true"> 
+	<input id="check_m3b" type="checkbox" checked>
+	<input id="out_m3b" type="int" size="2" disabled="true"> 
 
 	<img src="./data/essence/memory_3_deer.jpg" alt="Joyous deer essence" >
-	<input id="out_deer3" type="int" size="2" disabled="true"> 
+	<input id="check_m3d" type="checkbox" checked>
+	<input id="out_m3d" type="int" size="2" disabled="true"> 
 	
 	<img src="./data/essence/memory_3_imp.jpg" alt="Joyous imp essence" >
-	<input id="out_imp3" type="int" size="2" disabled="true"> 
+	<input id="check_m3i" type="checkbox" checked>
+	<input id="out_m3i" type="int" size="2" disabled="true"> 
+	
+	<img src="./data/essence/green_deluxe.png" alt="Deluxe greens" >
+	<input id="check_g3" type="checkbox" checked>
+	<input id="out_g3" type="int" size="2" disabled="true"> 
 	<br>
 	
 	<input id="bt_recycle" type="button" value="Recycle" onclick="recycle();" disabled ="true">
 	<br><br>
-
+	
 	<script>
 	
 	document.getElementById("uploadSourceFile").addEventListener("change", loadSource, false);
@@ -57,97 +71,102 @@
 	
 	function readInventory()
 	{	
-		var wl_bird2 = 0;
-		var wl_deer2 = 0;
-		var wl_imp2  = 0;
-		var wl_bird3 = 0;
-		var wl_deer3 = 0;
-		var wl_imp3  = 0;
-		
+		arrayPos   = [];
+		var arrayName  = [ "m2b", "m2d", "m2i", "m3b", "m3d", "m3i", "g2", "g3" ];
+		var arrayValue = [ 0,0,0,0,0,0,0,0];			
+	
 		for (var key in json.Player.Inventory.SlotDisplayOrder)
 		{
 			var line = json.Player.Inventory.SlotDisplayOrder[key];
 			
 			if (line != null ) {
-			switch ( line.item.configID.Value ) {
-				case 'memory_2_bird':
-					wl_bird2 += line.amount;
-					break;
-				case 'memory_2_deer':
-					wl_deer2 += line.amount;
-					break;
-				case 'memory_2_imp':
-					wl_imp2 += line.amount;	
-					break;
-				case 'memory_3_bird':
-					wl_bird3 += line.amount;
-					break;
-				case 'memory_3_deer':
-					wl_deer3 += line.amount;
-					break;
-				case 'memory_3_imp':
-					wl_imp3 += line.amount;	
-					break;
-			} }				
-		}
-		
-		document.getElementById("out_bird2").value = wl_bird2;
-		document.getElementById("out_deer2").value = wl_deer2;
-		document.getElementById("out_imp2").value  = wl_imp2;	
-		document.getElementById("out_bird3").value = wl_bird3;
-		document.getElementById("out_deer3").value = wl_deer3;
-		document.getElementById("out_imp3").value  = wl_imp3;
-					
-		if ( wl_bird2 != 0 || wl_deer2 != 0 || wl_imp2 != 0 || wl_bird3 != 0 || wl_deer3 != 0 || wl_imp3 != 0 )
-		{			
-			document.getElementById("bt_recycle").disabled = false;				
-		}
-		else
+			
+			var nameSplit = line.item.configID.Value.split("_");
+			if ( ( nameSplit[0] == "memory" || nameSplit[0] == "greens" )  && nameSplit[1] != "1" )
+			{
+				try {
+				var nameShort = nameSplit[0].substring(0,1).concat(nameSplit[1].substring(0,1), nameSplit[2].substring(0,1));
+				}
+				catch(err) {
+				var nameShort = nameSplit[0].substring(0,1).concat(nameSplit[1].substring(0,1));
+				}
+				
+				arrayValue[arrayName.indexOf(nameShort)] += line.amount;
+				
+				arrayPos.push(key);
+			
+			}}	
+		}				
+
+		document.getElementById("bt_recycle").disabled = ( arrayValue.reduce((a, b) => a + b, 0) != 0 ) > 0 ? false : true;
+				
+		for ( var index in arrayName )
 		{
-			document.getElementById("bt_recycle").disabled = true;
+			var name = arrayName[index];
+			var value = arrayValue[index];
+			
+			var nameOut = "out_".concat(name);
+			var nameCheck = "check_".concat(name);
+			
+			document.getElementById(nameOut).value = value;
+			document.getElementById(nameCheck).checked  = ( value == 0 ) ? false : true;			
+			document.getElementById(nameCheck).disabled = ( value == 0 ) ? true : false;			
+			
 		}
 	}	
 
-	function recycle() {		
-	
-			document.getElementById("bt_recycle").disabled = true;
-	
-			for (var key in json.Player.Inventory.SlotDisplayOrder)
+	function recycle() {			
+			
+			var checkSave = false;
+			var arrayName  = [ "m2b", "m2d", "m2i", "m3b", "m3d", "m3i", "g2", "g3" ];
+			
+			for ( var i in arrayName )
 			{
-				var line = json.Player.Inventory.SlotDisplayOrder[key];
-				
-				const factor = 3;
-				
-				if (line != null ) {
-				switch ( line.item.configID.Value ) {
-					case 'memory_2_bird':
-						line.amount *= factor;
-						line.item.configID.Value = "memory_1_bird";						
-						break;
-					case 'memory_2_deer':
-						line.amount *= factor;
-						line.item.configID.Value = "memory_1_deer";
-						break;
-					case 'memory_2_imp':
-						line.amount *= factor;
-						line.item.configID.Value = "memory_1_imp";
-						break;
-					case 'memory_3_bird':
-						line.amount *= factor;
-						line.item.configID.Value = "memory_2_bird";
-						break;
-					case 'memory_3_deer':
-						line.amount *= factor;
-						line.item.configID.Value = "memory_2_deer";
-						break;
-					case 'memory_3_imp':
-						line.amount *= factor;
-						line.item.configID.Value = "memory_2_imp";
-						break;
-				} }			
+				nameCheck = "check_".concat(arrayName[i]);
+				arrayName[i] = ( document.getElementById(nameCheck).checked ) ? arrayName[i] : 0;				
 			}
 			
-			save( JSON, true );	
+			for ( var i in arrayPos )
+			{
+				var line = json.Player.Inventory.SlotDisplayOrder[arrayPos[i]];
+				
+				const factor = 3;
+				const factorGreen = 2;
+				
+				var nameSplit = line.item.configID.Value.split("_");
+				
+				try {
+				var nameShort = nameSplit[0].substring(0,1).concat(nameSplit[1].substring(0,1), nameSplit[2].substring(0,1));
+				}
+				catch(err) {
+				var nameShort = nameSplit[0].substring(0,1).concat(nameSplit[1].substring(0,1));
+				}
+				
+				if ( arrayName.indexOf(nameShort) != -1 )
+				{
+					switch ( nameSplit[0] )
+					{
+						case "memory":
+						line.amount *= factor;						
+						break;
+						
+						case "greens":
+						line.amount *= factorGreen;
+						break;
+					}
+					//var aux = parseInt(nameSplit[1]);
+					nameSplit[1] = parseInt(nameSplit[1]) - 1;
+					line.item.configID.Value = nameSplit.join("_");				
+					checkSave = true;
+				}			
+			}
+			
+			if ( checkSave )
+			{
+				document.getElementById("bt_recycle").disabled = true;				
+			}
+			
+			save( JSON, checkSave );	
 	}
 	</script>
 </body>
