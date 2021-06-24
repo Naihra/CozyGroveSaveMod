@@ -33,9 +33,9 @@ These apps create a new save file from the information of the one you load. My r
 Name of the slots are "cg_save.sf" "cg_save_2.sf" "cg_save_3.sf".
 
 ### Essence Recycler
-Takes essence from your inventory only, not from storage. 
+Takes essence and greens from your inventory only, not from storage. 
 
-In the current version you get 3 lower rank essences for each one you recycle.
+In the current version you get 3 lower rank essences for each one you recycle and 2 greens.
 
 They max at 50, if it were to generate more than that the excess will be lost, but different stacks are treated separatedly.
 
