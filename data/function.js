@@ -76,16 +76,18 @@ function loadAndDraw(ruta, ext, name, pos_x, pos_y, size_x, size_y, color)
 
 function iniPaint()
 {
-	canvas   	= document.getElementById("myCanvas");
-	ctx      	= canvas.getContext("2d");		
-	ruta     	= "./data/";
-	rutaBase 	= "./data/base/"
-	rutaImp 	= "./data/imp/"
-	rutaAnimal 	= "./data/animal/"
-	rutaForage 	= "./data/forage/"
-	rutaRocks 	= "./data/rock/"
-	offset_x 	= 100;
-	offset_y 	= 200;	
+	canvas   	  = document.getElementById("myCanvas");
+	ctx      	  = canvas.getContext("2d");		
+	ruta     	  = "./data/";
+	rutaBase 	  = "./data/base/"
+	rutaImp 	  = "./data/imp/"
+	rutaAnimal 	  = "./data/animal/"
+	rutaForage 	  = "./data/forage/"
+	rutaRocks 	  = "./data/rock/"
+	offset_x 	  = 100;
+	offset_y 	  = 200;	
+	canvas.height = 1100;
+	canvas.width  = 1000;	
 }
 
 function clearCanvas()
