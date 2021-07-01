@@ -50,30 +50,6 @@ function loadSource()
 	reader.readAsText(this.files[0]);
 }	
 
-function loadAndDraw(ruta, ext, name, pos_x, pos_y, size_x, size_y, color)
-{
-	color = ( color == '' || color == null ) ? "black" : color;
-	
-	const img_name = ruta.concat(name,".",ext);		
-	
-	var image = new Image();			
-	image.onload = function()
-	{
-		ctx.drawImage(image, pos_x, pos_y, size_x, size_y);	
-	}
-	image.onerror = function()
-	{
-		ctx.beginPath();
-		ctx.arc(pos_x, pos_y, 6, 0, 2 * Math.PI);
-		ctx.fillStyle = color;
-		ctx.fill();
-		
-		ctx.font = "12px Courier New";
-		ctx.fillText(name, pos_x + 12, pos_y + 6);
-	}
-	image.src = img_name;	
-}
-
 function iniPaint()
 {
 	canvas   	  = document.getElementById("myCanvas");
@@ -93,6 +69,40 @@ function iniPaint()
 function clearCanvas()
 {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+function loadAndDraw(ruta, ext, name, pos_x, pos_y, size_x, size_y, color)
+{
+	color = ( color == '' || color == null ) ? "black" : color;
+	
+	const img_name = ruta.concat(name,".",ext);		
+	
+	var image = new Image();			
+	image.onload = function()
+	{
+		ctx.drawImage(image, pos_x, pos_y, size_x, size_y);	
+	}
+	image.onerror = function()
+	{
+		circleAndWrite(name, pos_x, pos_y, color);
+	}
+	image.src = img_name;	
+}
+
+function circleAndWrite(texto, pos_x, pos_y, color, font)
+{
+	var baseFont = "12px Courier New";
+	
+	color = ( color == '' || color == null ) ? "black" : color;
+	font  = ( font  == '' || font  == null ) ? baseFont : font.concat(" ", baseFont);
+	
+	ctx.beginPath();
+	ctx.arc(pos_x, pos_y, 6, 0, 2 * Math.PI);
+	ctx.fillStyle = color;
+	ctx.fill();
+	
+	ctx.font = font;
+	ctx.fillText(texto, pos_x + 12, pos_y + 6); 		
 }
 
 function paintBase( fences )

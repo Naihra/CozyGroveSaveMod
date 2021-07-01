@@ -28,6 +28,7 @@
 		<option value="findRock">Rocks</option>
 		<option value="findWild">Wild trees</option>			
 		<option value="findCrit">Critters</option>				
+		<option value="findHid">Hidden objects</option>				
 	</select> 
 	
 	<input id="btFind" type="button" value="Find me!" onclick="findMe();" disabled="false">
@@ -104,6 +105,9 @@
 		case "findCrit":
 		findCritters();
 		break;		
+		
+		case "findHid":
+		findHidden();
 		}			
 	}
 	
@@ -134,14 +138,40 @@
 				} 
 				else
 				{		
-					ctx.beginPath();
-					ctx.arc(pos_x, pos_y, 6, 0, 2 * Math.PI);
-					ctx.fillStyle = "black";
-					ctx.fill();
-					
-					ctx.font = "12px Courier New";
-					ctx.fillText(line.item.configID.Value, pos_x + 12, pos_y + 6); 				
+					circleAndWrite(line.item.configID.Value, pos_x, pos_y);	
 				}
+			}
+			} catch(err) { }
+		}
+	}
+	
+	function findInstance( item, type )
+	{
+		for( var key in json.ItemsOnGroundData.OnGround )
+		{
+			var line = json.ItemsOnGroundData.OnGround[key];
+			
+			try {						
+			if ( line.Key.Value == item )
+			{
+
+				pos_x = 4 * (line.Value.position.x + offset_x);
+				pos_y = 4 * (offset_y - line.Value.position.y);			
+				
+				switch( type )
+				{
+					case "ground":
+						var name = line.Value.item.configID.Value;
+						var color = "black";
+					break;
+					
+					case "inside":
+						var name = line.Value.item.state.instanceLootRewards[0].itemId;
+						var color = "brown";
+					break;
+				}
+	
+				circleAndWrite(name, pos_x, pos_y, color);	
 			}
 			} catch(err) { }
 		}
@@ -186,6 +216,25 @@
 		}		
 	}
 	
+	function findImpItem(item)
+	{
+		for( var key in json.ImpsByID )
+		{
+			var line = json.ImpsByID[key];
+			
+			try {						
+			if ( line.Key.Value == item )
+			{
+				pos_x = 4 * (line.Value.position.x + offset_x);
+				pos_y = 4 * (offset_y - line.Value.position.y);			
+	
+				circleAndWrite(line.Value.rewardItemID.Value, pos_x, pos_y, "darkblue");	
+			}
+			} catch(err) { }
+			
+		}
+	}
+	
 	function findCustom( item, color, image )
 	{			
 		if ( item != "" )
@@ -203,8 +252,8 @@
 				try {				
 				if ( line.item.configID.Value.includes(item) )
 				{
-					pos_x = 4 * (line.position.x + offset_x);
-					pos_y = 4 * (offset_y - line.position.y);
+					var pos_x = 4 * (line.position.x + offset_x);
+					var pos_y = 4 * (offset_y - line.position.y);
 					
 					if ( image != null && image != "" )
 					{
@@ -233,13 +282,12 @@
 					}
 					else
 					{					
-						ctx.beginPath();
-						ctx.arc(pos_x, pos_y, 6, 0, 2 * Math.PI);
-						ctx.fillStyle = color;
-						ctx.fill();
-						
-						ctx.font = "12px Courier New";
-						ctx.fillText(line.item.configID.Value, pos_x + 12, pos_y + 6); 						
+						var font = "";
+						if ( item == "shell" )
+						{
+							font = checkCollection( line.item.configID.Value, "shells" );	
+						}
+						circleAndWrite(line.item.configID.Value, pos_x, pos_y, color, font);		
 					}
 				}
 				} catch(err) {}
@@ -253,18 +301,36 @@
 		for( var key in json.CrittersByID )
 		{		
 			var line = json.CrittersByID[key].Value;	
+
+			var pos_x = 4 * (line.position.x + offset_x);
+			var pos_y = 4 * (offset_y - line.position.y);			
 			
-			pos_x = 4 * (line.position.x + offset_x);
-			pos_y = 4 * (offset_y - line.position.y);
-			
-			ctx.beginPath();
-			ctx.arc(pos_x, pos_y, 6, 0, 2 * Math.PI);
-			ctx.fillStyle = "darkred";
-			ctx.fill();
-			
-			ctx.font = "12px Courier New";
-			ctx.fillText(line.configID.Value, pos_x + 12, pos_y + 6); 			
+			var font = checkCollection( line.configID.Value, "critters" );			
+			circleAndWrite(line.configID.Value, pos_x, pos_y, "darkred", font);		
 		}
+	}
+	
+	function findHidden()
+	{
+		for( var key in json.hiddenObjects )
+		{
+			var line = json.hiddenObjects[key];
+			
+			switch(line.mode)
+			{
+				case "ON_GROUND":
+				findInstance(line.itemInstanceID.Value, "ground");				
+				break;
+				
+				case "INSIDE_HOLDER":
+				findInstance(line.itemInstanceID.Value, "inside");
+				break;
+				
+				case "IMP":
+				findImpItem(line.itemInstanceID.Value);				
+				break;			
+			}
+		}		
 	}
 	
 	function findForage()
@@ -275,6 +341,30 @@
 		findCustom( "shell", "blue" );
 		findCustom( "spirit_well" );
 		findSkip();
+	}
+	
+	function checkCollection( item, cat )
+	{
+		var font = "bold italic";
+		
+		//For critters need to add "caught", shell names are the same
+		if ( cat == "critters" )
+		{
+			var nameSplit = item.split("_")
+			nameSplit.splice(1, 0, "caught");
+			item = nameSplit.join("_");
+		}
+			
+		for (var key in json.PlayerCollections.itemGroups[cat].donatedItemConfigIdMap )
+		{
+			if ( item == key )
+			{
+				font = "";
+				break;
+			}				
+		}
+		
+		return font;
 	}
 	
 	function setCustom()
