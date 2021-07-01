@@ -21,7 +21,8 @@ The food names are the in-save coded ones.
 The table can be sorted by clicking on the header.
 
 ### Finder
-Locates any item that's on the ground, can use any of the preset selection or input a string in "Custom search", then press Enter or hit the "Find me!" button.
+Locates any item that's on the ground, can use any of the preset selection or input a string in "Custom search", then press Enter or the button.
+
 ![image](https://user-images.githubusercontent.com/84879535/124158348-15c54280-da9a-11eb-9e40-0f170b93d8bf.png)
 
 Shells and critters not in collection will show highlighted.
