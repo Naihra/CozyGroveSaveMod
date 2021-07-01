@@ -27,8 +27,6 @@ Locates any item that's on the ground, can use any of the preset selection or in
 
 Shells and critters not in collection will show highlighted.
 
-The Imp option is not 100% reliable, sometimes imps just don't spawn where the save says they have. Or they disappear at reload.
-
 ## Modify data
 These apps create a new save file from the information of the one you load. My recommendation is load the save in another slot. I've used all 3 of them many times now and haven't had any issues, but use them under your own responsability and always make a copy before.
 
