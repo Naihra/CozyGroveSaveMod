@@ -21,9 +21,10 @@ The food names are the in-save coded ones.
 The table can be sorted by clicking on the header.
 
 ### Finder
-Locates any item that's on the ground.
+Locates any item that's on the ground, can use any of the preset selection or input a string in "Custom search", then press Enter or hit the "Find me!" button.
+![image](https://user-images.githubusercontent.com/84879535/124158348-15c54280-da9a-11eb-9e40-0f170b93d8bf.png)
 
-Default option allows to search any string, including "_" to show everything. Hit Enter or press the button to search.
+Shells and critters not in collection will show highlighted.
 
 The Imp option is not 100% reliable, sometimes imps just don't spawn where the save says they have. Or they disappear at reload.
 
