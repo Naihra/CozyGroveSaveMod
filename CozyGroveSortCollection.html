@@ -41,8 +41,8 @@
 	<input type="checkbox" id="orderFlowers">
 	<label for="orderFlowers">Flowers</label>
 	<select id="agrupFlowers">
-		<option value="aflRarity">Group by type and rarity</option>
 		<option value="aflRarCol">Group by type and color</option>
+		<option value="aflRarity">Group by type and rarity</option>		
 		<option value="aflColour">Group by color</option>
 	</select> 
 	<br>
@@ -87,6 +87,8 @@
 		arrayRarity = [ "common", "uncommon", "rare", "legendary", "unique" ];
 		arraySeason = [ "earlyspring", "spring", "latespring", "earlysummer", "summer", "latesummer", "earlyfall", "fall", "latefall", "earlywinter", "winter", "latewinter" ];
 		arrayLetter = [ "A","B","C","D","E","F","G","H","I","J","K","L" ];
+		arrayMatNum = [ "gem", "ore", "ingot", "memory", "relic", "bone", "flower" ];
+		arrayOreNum = [ "iron", "silver", "gold" ];
 		
 		if ( document.getElementById("orderFishs").checked || checkAll )
 		{
@@ -105,7 +107,7 @@
 		}
 		if ( document.getElementById("orderMats").checked || checkAll )
 		{
-			sortCategory("materials");			
+			sortCustom( "materials", "ama" );
 			checkSave = true;
 		}
 		if ( document.getElementById("orderShells").checked || checkAll )
@@ -255,6 +257,34 @@
 			if ( sort.substring(0,3) == "afo" && ( nameSplit[2] == "bird" || nameSplit[2] == "deer" || nameSplit[2] == "imp" ) )
 			{
 				nameSplit.splice(1, 2, nameSplit[2], nameSplit[1] );
+			}
+
+			//For materials
+			if ( sort.substring(0,3) == "ama" )
+			{
+				if ( nameSplit[0] == "ore" || nameSplit[0] == "ingot" )
+				{
+					nameSplit[1] = arrayOreNum.indexOf(nameSplit[1]);
+				}
+				
+				if ( nameSplit[0] == "relic" )
+				{
+					nameSplit[2] = arrayRarity.indexOf(nameSplit[2]);
+					
+					if ( nameSplit[1] == "ash" )
+					{
+						nameSplit[1] = "z";
+					}
+				}
+			
+				if ( arrayMatNum.indexOf(nameSplit[0]) != -1 )
+				{
+					nameSplit[0] = arrayMatNum.indexOf(nameSplit[0]);
+				} 
+				else
+				{
+					nameSplit.unshift(arrayMatNum.length);
+				}
 			}
 			
 			array_code.push(nameSplit.join(""));
