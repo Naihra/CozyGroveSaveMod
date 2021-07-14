@@ -45,7 +45,8 @@
 	</table>
 	</div>
 	
-	<input id="bt_recycle" type="button" value="Recycle" onclick="recycle();" disabled ="true">
+	<input id="bt_recycle" type="button" value="Recycle" onclick="recycle();" disabled ="true">	
+	<input id="bt_mark_nd" type="button" value="Mark all" onclick="markNew();" disabled ="true">
 	<br><br>
 
 	<script>
@@ -108,11 +109,13 @@
 			table.deleteRow(1);	
 			table.style.display = 'block';		
 			document.getElementById("bt_recycle").disabled = false;
+			document.getElementById("bt_mark_nd").disabled = false;
 		}
 		else
 		{
 			table.style.display = 'none';		
 			document.getElementById("bt_recycle").disabled = true;
+			document.getElementById("bt_mark_nd").disabled = true;
 			alert("No valid item found");
 		}
 	}	
@@ -137,6 +140,7 @@
 		if ( checkSave )
 		{
 			document.getElementById("bt_recycle").disabled = true;					
+			document.getElementById("bt_mark_nd").disabled = true;					
 			save( JSON, checkSave );			
 		}				
 	}
@@ -155,6 +159,19 @@
 		else if ( value == "" )
 		{
 			table.rows[element.rowIndex].cells[0].innerHTML = "X";
+		}
+	}
+	
+	function markNew()
+	{
+		for (var key in table.tBodies[0].rows)
+		{
+			var line = table.tBodies[0].rows[key].cells;
+			
+			if ( line[0].innerHTML == "" )
+			{
+				line[0].innerHTML = "X";
+			}
 		}
 	}
 	
