@@ -65,3 +65,8 @@ Grouped by type/season, type/color, color.
 Expands or reduces the size of the backpack and the storage. To make it less of a cheat there is an optional "Donation" field, where you can input the amount you want to spend on the upgrade.
 
 The input values for rows can be positive or negative, and it will add or remove 4 slots per row to keep the inventories consistent. If after removing the slots you end up with less than what you should have based on the upgrades you've already purchased the game will add them when you load the save.
+
+### Imp Rescue
+Can be used to move imps that are not showing in game, usually because they have spawned in safe areas.
+
+Full readme inside.
