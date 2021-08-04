@@ -60,10 +60,10 @@ function iniPaint()
 	rutaAnimal 	  = "./data/animal/"
 	rutaForage 	  = "./data/forage/"
 	rutaRocks 	  = "./data/rock/"
-	offset_x 	  = 100;
+	offset_x 	  = 125;
 	offset_y 	  = 200;	
 	canvas.height = 1100;
-	canvas.width  = 1000;	
+	canvas.width  = 1100;	
 }
 
 function clearCanvas()
@@ -116,8 +116,8 @@ function paintBase( fences )
 	loadAndDraw(rutaBase, "png", "flamey", pos_x, pos_y, size, size);
 	
 	// Mr Kit
-	pos_x = ( 4 * (json.MerchantsByID[0].Value.spawnPosition.x + offset_x) ) - (size / 2);
-	pos_y = ( 4 * (offset_y - json.MerchantsByID[0].Value.spawnPosition.y) ) - (size / 2);
+	pos_x = ( 4 * (json.MerchantsByID[0].Value.spawnPosition.x + offset_x) ) - (size * 2/3);
+	pos_y = ( 4 * (offset_y - json.MerchantsByID[0].Value.spawnPosition.y) ) - (size * 1.2);
 	
 	loadAndDraw(rutaBase, "jpg", "mr_kit", pos_x, pos_y, size, size);
 	
@@ -125,7 +125,7 @@ function paintBase( fences )
 	{
 		var line = json.SpiritsByID[key].Value;
 		
-		if ( line.characterID.Value.substring(0,6) != "travel" )
+		if ( line.spawnedGenerator )
 		{		
 			pos_x = 4 * (line.location.x + offset_x);
 			pos_y = 4 * (offset_y - line.location.y);
@@ -183,7 +183,8 @@ function paintGrid()
 		ctx.strokeStyle = "lightgray";
 		ctx.stroke();
 		
-		ctx.font = "12px Courier New";
+		ctx.font 	  = "12px Courier New";
+		ctx.fillStyle = 'black';
 		ctx.textAlign = 'start';
 		ctx.fillText(v_p, posx, 10); 
 	}
@@ -197,7 +198,8 @@ function paintGrid()
 		ctx.strokeStyle = "lightgray";
 		ctx.stroke();
 		
-		ctx.font = "12px Courier New";
+		ctx.font 	  = "12px Courier New";
+		ctx.fillStyle = 'black';
 		ctx.textAlign = 'end';
 		ctx.fillText(h_p, canvas.clientWidth, posy); 
 	}		
