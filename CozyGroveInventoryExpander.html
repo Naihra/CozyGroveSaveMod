@@ -45,6 +45,15 @@
 	<label>Add or remove rows</label>
 	<input id="storageRows"  type="int" size="3" disabled="true"> 
 	
+	<h2>Wardrobe</h2>
+	<label>Current size</label>
+	<input id="wardrobeMax" type="int" size="4" disabled="true"> 
+	<label>Empty spaces</label>
+	<input id="wardrobeEmpty" type="int" size="4" disabled="true"> 
+	<br>
+	<label>Add or remove rows</label>
+	<input id="wardrobeRows"  type="int" size="3" disabled="true"> 
+	
 	<h2>Save</h2>
 	<input id="bt_expand" type="button" value="Expand" onclick="expand();" disabled ="true">
 	<br><br>
@@ -61,6 +70,7 @@
 			document.getElementById("moneyDonate").disabled  = false;			
 			document.getElementById("backpackRows").disabled = false;			
 			document.getElementById("storageRows").disabled  = false;			
+			document.getElementById("wardrobeRows").disabled  = false;			
 		
 			readData()
 		}
@@ -71,9 +81,11 @@
 		document.getElementById("moneyTotal").value  = json.Player.Wallet.Currencies.cash;
 		document.getElementById("backpackMax").value = json.Player.Inventory.maxInventorySize;
 		document.getElementById("storageMax").value  = json.Player.Storage.maxInventorySize;	
+		document.getElementById("wardrobeMax").value = json.Player.ExtraStorageCategories[0].maxInventorySize;	
 		
 		readNull( "Inventory", "backpackEmpty" );
 		readNull( "Storage", "storageEmpty" );		
+		readNullExtra( 0, "wardrobeEmpty" );		
 	}	
 
 	function expand() {		
@@ -84,6 +96,8 @@
 	    var backpackEmpty = document.getElementById("backpackEmpty").value;		
 	    var storageRows  = document.getElementById("storageRows").value;		
 	    var storageEmpty = document.getElementById("storageEmpty").value;		
+		var wardrobeRows  = document.getElementById("wardrobeRows").value;		
+	    var wardrobeEmpty = document.getElementById("wardrobeEmpty").value;	
 		
 		if ( moneyDonate > json.Player.Wallet.Currencies.cash )
 		{
@@ -110,7 +124,13 @@
 			return;
 		}	
 		
-		checkSave = ( checkBack || checkStor ) ? true : false;		
+		var checkWard = modifyExtra( 0,   wardrobeRows,  wardrobeEmpty,  "wardrobeMax",  "wardrobeEmpty" );	
+		if (typeof checkWard === 'undefined')
+		{
+			return;
+		}	
+		
+		checkSave = ( checkBack || checkStor || checkWard ) ? true : false;		
 		save( JSON, checkSave );	
 			
 	}
@@ -121,6 +141,17 @@
 		for ( var key in json.Player[location].SlotDisplayOrder )
 		{
 			var line = json.Player[location].SlotDisplayOrder[key];
+			cont = ( line == null ) ? cont += 1 : cont;
+		}		
+		document.getElementById(field).value = cont;
+	}
+	
+	function readNullExtra ( index, field )
+	{
+		var cont = 0;
+		for ( var key in json.Player.ExtraStorageCategories[index].SlotDisplayOrder )
+		{
+			var line = json.Player.ExtraStorageCategories[0].SlotDisplayOrder[key];
 			cont = ( line == null ) ? cont += 1 : cont;
 		}
 		document.getElementById(field).value = cont;
@@ -164,6 +195,54 @@
 				
 				json.Player[location].maxInventorySize -= slots;
 				document.getElementById(fieldMax).value = json.Player[location].maxInventorySize;
+				document.getElementById(fieldEmpty).value -= slots;
+				return true;
+			} 
+			else
+			{ 
+				alert("Not enough empty spaces to delete"); return; 
+			}
+		} else  { return false }
+	}
+	
+	function modifyExtra( index, rows, empty, fieldMax, fieldEmpty )
+	{
+		var backObj = json.Player.ExtraStorageCategories[index].SlotDisplayOrder;
+		
+		if ( rows > 0 )
+		{			
+			for (var i = 0; i < 4 * rows; i++)
+			{				
+				backObj.push( null );
+			}
+			
+			json.Player.ExtraStorageCategories[index].maxInventorySize += 4 * rows;
+			document.getElementById(fieldMax).value = json.Player.ExtraStorageCategories[index].maxInventorySize;	
+			document.getElementById(fieldEmpty).value = parseInt(empty) + 4 * rows;
+			return true;
+		} 
+		else if ( rows < 0 ) 
+		{
+			rows *= -1;			
+			if ( rows <= Math.trunc( empty / 4 ) )
+			{
+				var slots = 4 * rows;
+				var cont  = 0;
+				var i     = json.Player.ExtraStorageCategories[index].maxInventorySize - 1;
+				
+				while ( cont < slots )
+				{
+					var line = json.Player.ExtraStorageCategories[index].SlotDisplayOrder[i];
+					if ( line == null )
+					{
+						backObj.splice(i, 1)
+						cont++;
+					}					
+					i--;					
+				}
+				
+				json.Player.ExtraStorageCategories[index].maxInventorySize -= slots;
+				document.getElementById(fieldMax).value = json.Player.ExtraStorageCategories[index].maxInventorySize;
 				document.getElementById(fieldEmpty).value -= slots;
 				return true;
 			} 
