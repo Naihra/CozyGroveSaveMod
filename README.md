@@ -1,4 +1,4 @@
-# CURRENTLY APPS ARE NOT WORKING FOR THE NEWEST STEAM BETA UPDATE (2.3.0)
+# CURRENTLY APPS DON'T WORK FOR THE NEWEST STEAM BETA UPDATE (2.3.0)
 
 # Save location
 https://support.spryfox.com/hc/en-us/articles/1500003981321-Where-can-I-find-my-Cozy-Grove-logs-and-save-files-
