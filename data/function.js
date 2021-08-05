@@ -116,21 +116,24 @@ function paintBase( fences )
 	loadAndDraw(rutaBase, "png", "flamey", pos_x, pos_y, size, size);
 	
 	// Mr Kit
-	pos_x = ( 4 * (json.MerchantsByID[0].Value.spawnPosition.x + offset_x) ) - (size * 2/3);
-	pos_y = ( 4 * (offset_y - json.MerchantsByID[0].Value.spawnPosition.y) ) - (size * 1.2);
+	for ( var key in json.MerchantsByID )
+	{
+		pos_x = ( 4 * (json.MerchantsByID[key].spawnPosition[0] + offset_x) ) - (size * 2/3);
+		pos_y = ( 4 * (offset_y - json.MerchantsByID[key].spawnPosition[1]) ) - (size * 1.2);
+	}
 	
 	loadAndDraw(rutaBase, "jpg", "mr_kit", pos_x, pos_y, size, size);
 	
 	for (var key in json.SpiritsByID)
 	{
-		var line = json.SpiritsByID[key].Value;
+		var line = json.SpiritsByID[key];
 		
 		if ( line.spawnedGenerator )
 		{		
-			pos_x = 4 * (line.location.x + offset_x);
-			pos_y = 4 * (offset_y - line.location.y);
+			pos_x = 4 * (line.location[0] + offset_x);
+			pos_y = 4 * (offset_y - line.location[1]);
 								
-			loadAndDraw(rutaBase, "jpg", line.characterID.Value, pos_x - (size / 2), pos_y - (size / 2), size, size);
+			loadAndDraw(rutaBase, "jpg", line.characterID, pos_x - (size / 2), pos_y - (size / 2), size, size);
 		}
 	}	
 	
@@ -140,22 +143,22 @@ function paintBase( fences )
 	{			
 		const size_fence = 30;
 		
-		line = json.ItemsOnGroundData.OnGround[key].Value;
+		line = json.ItemsOnGroundData.OnGround[key];
 		
 		try {
 		
-		if ( fences && ( line.item.configID.Value == "dc_LC_fence_B_common" || line.item.configID.Value == "dc_LC_fence_A_common" ) )
+		if ( fences && ( line.item.configID == "dc_LC_fence_B_common" || line.item.configID == "dc_LC_fence_A_common" ) )
 		{
-			pos_x = 4 * (line.position.x + offset_x) - (size_fence / 4);
-			pos_y = 4 * (offset_y - line.position.y) - (size_fence / 2);
+			pos_x = 4 * (line.position[0] + offset_x) - (size_fence / 4);
+			pos_y = 4 * (offset_y - line.position[1]) - (size_fence / 2);
 			
 			loadAndDraw(rutaBase, "png", "fence", pos_x, pos_y, size_fence / 2, size_fence);
 		}
 		
-		if ( line.item.configID.Value.substring(0,11) == "major_lamp_" )
+		if ( line.item.configID.substring(0,11) == "major_lamp_" )
 		{
-			pos_x = 4 * (line.position.x + offset_x) - (size_fence / 2);
-			pos_y = 4 * (offset_y - line.position.y) - (size_fence / 2);
+			pos_x = 4 * (line.position[0] + offset_x) - (size_fence / 2);
+			pos_y = 4 * (offset_y - line.position[1]) - (size_fence / 2);
 			
 			loadAndDraw(rutaBase, "png", "flamey", pos_x, pos_y, size_fence, size_fence);
 		}

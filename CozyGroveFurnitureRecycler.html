@@ -73,7 +73,7 @@
 			
 			if (line != null ) {			
 			
-				var nameSplit = line.item.configID.Value.split("_");
+				var nameSplit = line.item.configID.split("_");
 								
 				if ( ( nameSplit[0] == "dc" || nameSplit[0].includes("deco") ) && nameSplit[nameSplit.length - 1] != "craftingRecipe" )
 				{
@@ -86,11 +86,11 @@
 					
 					//PENDIENTE
 					//Si ya existe la receta poner "Have" para que no deje hacer nada
-					for ( var key2 in json.SpiritsByID[1].Value.professionStates.crafter.inventory.slots )
+					for ( var key2 in json.checkedCraftIDs )
 					{
-						var line2 = json.SpiritsByID[1].Value.professionStates.crafter.inventory.slots[key2].item;
+						var line2 = json.checkedCraftIDs[key2];
 						
-						if ( line2.configID.Value == line.item.configID.Value )
+						if ( line2 == line.item.configID )
 						{
 							cellCheck.innerHTML = "Have";
 							break;
@@ -98,7 +98,7 @@
 					}
 					
 					cellId.innerHTML     = key;
-					cellName.innerHTML   = line.item.configID.Value;
+					cellName.innerHTML   = line.item.configID;
 					cellNo.innerHTML     = line.amount;
 				}
 			}				
@@ -132,7 +132,7 @@
 			if ( line[0].innerHTML == "X" )
 			{
 				checkSave = true;				
-				json.Player.Inventory.SlotDisplayOrder[line[1].innerHTML].item.configID.Value += "_craftingRecipe";
+				json.Player.Inventory.SlotDisplayOrder[line[1].innerHTML].item.configID += "_craftingRecipe";
 				json.Player.Inventory.SlotDisplayOrder[line[1].innerHTML].amount = 1;
 			}								
 		}

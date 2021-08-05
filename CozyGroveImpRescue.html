@@ -114,21 +114,24 @@
 	{
 		var contador = 1;
 		const size = 30;
+		
+		arrayId = [];
+		var contId = 0;
 	
 		for( var key in json.PersistedPrefabsByID )
 		{				
-			var line = json.PersistedPrefabsByID[key].Value;
+			var line = json.PersistedPrefabsByID[key];
 			
 			if ( line.prefabName.substring(0,4) == "Imps" )
 			{
 				contador += 1;
 				
-				pos_x = 4 * (line.position.x + offset_x) - (size / 2);
-				pos_y = 4 * (offset_y - line.position.y) - (size / 2);
+				pos_x = 4 * (line.position[0] + offset_x) - (size / 2);
+				pos_y = 4 * (offset_y - line.position[1]) - (size / 2);
 				
 				ctx.font = "12px Courier New";
 				ctx.textAlign = 'start';
-				ctx.fillText(key, pos_x, pos_y);			
+				ctx.fillText(contId, pos_x, pos_y);			
 						
 				var nameSplit = line.prefabName.split("_");
 				if ( nameSplit.length == 1 )
@@ -149,18 +152,21 @@
 				var cell_y 		= row.insertCell(3);
 				var cell_date	= row.insertCell(4);
 				
-				cell_number.innerHTML 	= key;
+				cell_number.innerHTML 	= contId;
 				cell_type.innerHTML 	= line.prefabName.split("_")[1];
-				cell_x.innerHTML		= line.position.x;
+				cell_x.innerHTML		= line.position[0];
 				cell_x.innerHTML		= cell_x.innerHTML.replace(".",",");
-				cell_y.innerHTML		= line.position.y;
+				cell_y.innerHTML		= line.position[1];
 				cell_y.innerHTML		= cell_y.innerHTML.replace(".",",");
+				
+				arrayId.push(key);
+				contId++;
 				
 				for ( var key_d in json.DecayingObjects )
 				{
 					var line_d = json.DecayingObjects[key_d];
 					
-					if ( line_d.instanceId.Value == line.instanceId.Value )
+					if ( line_d.instanceId == line.instanceId )
 					{					
 						var date = new Date(line_d.decayTimestamp * 1000);
 						var iso = date.toISOString().match(/(\d{4}\-\d{2}\-\d{2})T(\d{2}:\d{2}:\d{2})/)
@@ -194,17 +200,17 @@
 			return;
 		}
 		
-		var line = json.PersistedPrefabsByID[modId].Value;
+		var line = json.PersistedPrefabsByID[arrayId[modId]];
 		checkSave = true;
 		
 		if ( modX != "" )
 		{			
-			line.position.x = parseFloat(modX);
+			line.position[0] = parseFloat(modX);
 			table.tBodies[0].rows[modId].cells[2].innerHTML = modX;
 		}
 		if ( modY != "" )
 		{
-			line.position.y = parseFloat(modY);
+			line.position[1] = parseFloat(modY);
 			table.tBodies[0].rows[modId].cells[3].innerHTML = modY;
 		}
 		if ( modType == "Change" )

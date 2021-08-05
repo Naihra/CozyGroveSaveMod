@@ -99,12 +99,12 @@
 			
 		for( var key in json.AnimalsByID )
 		{			
-			var line = json.AnimalsByID[key].Value;
+			var line = json.AnimalsByID[key];
 			
-			var nameSplit = line.configID.Value.split("_");			
+			var nameSplit = line.configID.split("_");			
 	
-			var pos_x = 4 * (line.position.x + offset_x) - (size / 3);
-			var pos_y = 4 * (offset_y - line.position.y) - (size / 2);
+			var pos_x = 4 * (line.position[0] + offset_x) - (size / 3);
+			var pos_y = 4 * (offset_y - line.position[1]) - (size / 2);
 			
 			var name = arrayGame[arraySave.indexOf(nameSplit[2].concat(nameSplit[3]))];
 			var imgName = nameSplit[1].concat("_", name );
@@ -126,19 +126,19 @@
 			var cell_like     = row.insertCell(10);
 			var cell_dislike  = row.insertCell(11);
 			
-			cell_id.innerHTML 		= key;
+			cell_id.innerHTML 		= contador;
 			cell_type.innerHTML 	= nameSplit[1];
-			cell_saveName.innerHTML = line.configID.Value;
+			cell_saveName.innerHTML = line.configID;
 			cell_gameName.innerHTML = name;
 			cell_age.innerHTML 		= arrayAge[nameSplit[6]];
 			cell_feds.innerHTML 	= line.fedCount;
 			cell_level.innerHTML 	= line.shouldUpgradeWhenFed;
 			if ( line.desiredItem != null )
 			{
-				cell_want.innerHTML = line.desiredItem.configID.Value;
+				cell_want.innerHTML = line.desiredItem.configID;
 			}
-			cell_posx.innerHTML 	= line.position.x;
-			cell_posy.innerHTML 	= line.position.y;
+			cell_posx.innerHTML 	= line.position[0];
+			cell_posy.innerHTML 	= line.position[1];
             cell_like.innerHTML 	= arrayLike[nameSplit[4]];
 			cell_dislike.innerHTML 	= arrayDisl[nameSplit[5]];
 		}				

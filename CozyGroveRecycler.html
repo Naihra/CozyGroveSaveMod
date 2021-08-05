@@ -2,7 +2,7 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-	<title>Cosy Grove Essence Recycler</title>
+	<title>Cosy Grove Recycler</title>
 	<style type="text/css">
 		a,label,input {		
 		font-family: 'Courier New', monospace;		
@@ -14,20 +14,12 @@
 
 <body>
 
-	<h1>Cozy Grove Essence Recycler</h1>	
+	<h1>Cozy Grove Recycler</h1>	
 	
 	<label for="uploadSourceFile">Select your save</label><br>
 	<input id="uploadSourceFile" type="file" accept=".sf">
 	<br><br>
 
-	<img src="./data/essence/memory_2_bird.jpg" alt="Happy bird essence" width="100" height="100" >
-	<input id="check_m2b" type="checkbox" checked>
-	<input id="out_m2b" type="int" size="2" disabled="true"> 
-	
-	<img src="./data/essence/memory_2_deer.jpg" alt="Happy deer essence" >
-	<input id="check_m2d" type="checkbox" checked>
-	<input id="out_m2d" type="int" size="2" disabled="true"> 
-	
 	<img src="./data/essence/memory_2_imp.jpg" alt="Happy imp essence" >
 	<input id="check_m2i" type="checkbox" checked>
 	<input id="out_m2i" type="int" size="2" disabled="true"> 
@@ -36,14 +28,6 @@
 	<input id="check_g2" type="checkbox" checked>
 	<input id="out_g2" type="int" size="2" disabled="true"> 
 	<br>
-	
-	<img src="./data/essence/memory_3_bird.jpg" alt="Joyous bird essence" >
-	<input id="check_m3b" type="checkbox" checked>
-	<input id="out_m3b" type="int" size="2" disabled="true"> 
-
-	<img src="./data/essence/memory_3_deer.jpg" alt="Joyous deer essence" >
-	<input id="check_m3d" type="checkbox" checked>
-	<input id="out_m3d" type="int" size="2" disabled="true"> 
 	
 	<img src="./data/essence/memory_3_imp.jpg" alt="Joyous imp essence" >
 	<input id="check_m3i" type="checkbox" checked>
@@ -72,8 +56,8 @@
 	function readInventory()
 	{	
 		arrayPos   = [];
-		var arrayName  = [ "m2b", "m2d", "m2i", "m3b", "m3d", "m3i", "g2", "g3" ];
-		var arrayValue = [ 0,0,0,0,0,0,0,0];			
+		arrayName  = [ "m2i", "m3i", "g2", "g3" ];
+		var arrayValue = [ 0,0,0,0];			
 	
 		for (var key in json.Player.Inventory.SlotDisplayOrder)
 		{
@@ -81,8 +65,8 @@
 			
 			if (line != null ) {
 			
-			var nameSplit = line.item.configID.Value.split("_");
-			if ( ( nameSplit[0] == "memory" || nameSplit[0] == "greens" )  && nameSplit[1] != "1" )
+			var nameSplit = line.item.configID.split("_");
+			if ( ( ( nameSplit[0] == "memory" && nameSplit[2] == "imp" ) || nameSplit[0] == "greens" )  && nameSplit[1] != "1" )
 			{
 				try {
 				var nameShort = nameSplit[0].substring(0,1).concat(nameSplit[1].substring(0,1), nameSplit[2].substring(0,1));
@@ -118,7 +102,6 @@
 	function recycle() {			
 			
 			var checkSave = false;
-			var arrayName  = [ "m2b", "m2d", "m2i", "m3b", "m3d", "m3i", "g2", "g3" ];
 			
 			for ( var i in arrayName )
 			{
@@ -133,7 +116,7 @@
 				const factor = 3;
 				const factorGreen = 2;
 				
-				var nameSplit = line.item.configID.Value.split("_");
+				var nameSplit = line.item.configID.split("_");
 				
 				try {
 				var nameShort = nameSplit[0].substring(0,1).concat(nameSplit[1].substring(0,1), nameSplit[2].substring(0,1));
@@ -156,7 +139,7 @@
 					}
 					//var aux = parseInt(nameSplit[1]);
 					nameSplit[1] = parseInt(nameSplit[1]) - 1;
-					line.item.configID.Value = nameSplit.join("_");				
+					line.item.configID = nameSplit.join("_");				
 					checkSave = true;
 				}			
 			}

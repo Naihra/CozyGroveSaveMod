@@ -116,13 +116,13 @@
 		for( var key in json.ItemsOnGroundData.OnGround )
 		{
 			var leng = item.length;
-			var line = json.ItemsOnGroundData.OnGround[key].Value;
+			var line = json.ItemsOnGroundData.OnGround[key];
 			
 			try {						
-			if ( line.item.configID.Value.substring(0,leng) == item )
+			if ( line.item.configID.substring(0,leng) == item )
 			{
-				pos_x = 4 * (line.position.x + offset_x);
-				pos_y = 4 * (offset_y - line.position.y);
+				pos_x = 4 * (line.position[0] + offset_x);
+				pos_y = 4 * (offset_y - line.position[1]);
 				
 				if ( special != null )
 				{	
@@ -131,14 +131,14 @@
 					pos_x -= size / 2;
 					pos_y -= size / 2;
 					
-					var nameSplit  = line.item.configID.Value.split("_");	
+					var nameSplit  = line.item.configID.split("_");	
 					var imgName = nameSplit[1].concat("_", nameSplit[2], "_", line.item.state.harvestable.hasLoot );
 				
 					loadAndDraw(rutaRocks, "png", imgName, pos_x, pos_y, size, size);	
 				} 
 				else
 				{		
-					circleAndWrite(line.item.configID.Value, pos_x, pos_y);	
+					circleAndWrite(line.item.configID, pos_x, pos_y);	
 				}
 			}
 			} catch(err) { }
@@ -152,21 +152,21 @@
 			var line = json.ItemsOnGroundData.OnGround[key];
 			
 			try {						
-			if ( line.Key.Value == item )
+			if ( key == item )
 			{
 
-				pos_x = 4 * (line.Value.position.x + offset_x);
-				pos_y = 4 * (offset_y - line.Value.position.y);			
+				pos_x = 4 * (line.position[0] + offset_x);
+				pos_y = 4 * (offset_y - line.position[1]);			
 				
 				switch( type )
 				{
 					case "ground":
-						var name = line.Value.item.configID.Value;
+						var name = line.item.configID;
 						var color = "black";
 					break;
 					
 					case "inside":
-						var name = line.Value.item.state.instanceLootRewards[0].itemId;
+						var name = line.item.state.instanceLootRewards[0].itemId;
 						var color = "brown";
 					break;
 				}
@@ -183,12 +183,12 @@
 	
 		for( var key in json.PersistedPrefabsByID )
 		{				
-			var line = json.PersistedPrefabsByID[key].Value;
+			var line = json.PersistedPrefabsByID[key];
 			
 			if ( line.prefabName.substring(0,4) == "Imps" )
 			{			
-				pos_x = 4 * (line.position.x + offset_x) - (size / 2);
-				pos_y = 4 * (offset_y - line.position.y) - (size / 2);
+				pos_x = 4 * (line.position[0] + offset_x) - (size / 2);
+				pos_y = 4 * (offset_y - line.position[1]) - (size / 2);
 							
 				var nameSplit = line.prefabName.split("_");
 				var imgName = nameSplit[0].concat(nameSplit[1]);
@@ -203,12 +203,12 @@
 	
 		for( var key in json.PersistedPrefabsByID )
 		{				
-			var line = json.PersistedPrefabsByID[key].Value;
+			var line = json.PersistedPrefabsByID[key];
 			
 			if ( line.prefabName.substring(0,4) != "Imps" )
 			{			
-				pos_x = 4 * (line.position.x + offset_x) - (size / 2);
-				pos_y = 4 * (offset_y - line.position.y) - (size / 2);
+				pos_x = 4 * (line.position[0] + offset_x) - (size / 2);
+				pos_y = 4 * (offset_y - line.position[1]) - (size / 2);
 					
 				var imgName = line.data.configID;				
 				loadAndDraw(rutaForage, "png", imgName, pos_x, pos_y, size, size);			
@@ -223,12 +223,12 @@
 			var line = json.ImpsByID[key];
 			
 			try {						
-			if ( line.Key.Value == item )
+			if ( key == item )
 			{
-				pos_x = 4 * (line.Value.position.x + offset_x);
-				pos_y = 4 * (offset_y - line.Value.position.y);			
+				pos_x = 4 * (line.position[0] + offset_x);
+				pos_y = 4 * (offset_y - line.position[1]);			
 	
-				circleAndWrite(line.Value.rewardItemID.Value, pos_x, pos_y, "darkblue");	
+				circleAndWrite(line.rewardItemID, pos_x, pos_y, "darkblue");	
 			}
 			} catch(err) { }
 			
@@ -243,17 +243,17 @@
 			
 			for( var key in json.ItemsOnGroundData.OnGround )
 			{			
-				var line = json.ItemsOnGroundData.OnGround[key].Value;	
-				var nameSplit  = line.item.configID.Value.split("_");
+				var line = json.ItemsOnGroundData.OnGround[key];	
+				var nameSplit  = line.item.configID.split("_");
 				
 				if ( item != "shell" || ( item == "shell" && nameSplit[nameSplit.length - 1] != "model" ) )
 				{
 
 				try {				
-				if ( line.item.configID.Value.includes(item) )
+				if ( line.item.configID.includes(item) )
 				{
-					var pos_x = 4 * (line.position.x + offset_x);
-					var pos_y = 4 * (offset_y - line.position.y);
+					var pos_x = 4 * (line.position[0] + offset_x);
+					var pos_y = 4 * (offset_y - line.position[1]);
 					
 					if ( image != null && image != "" )
 					{
@@ -285,9 +285,9 @@
 						var font = "";
 						if ( item == "shell" )
 						{
-							font = checkCollection( line.item.configID.Value, "shells" );	
+							font = checkCollection( line.item.configID, "shells" );	
 						}
-						circleAndWrite(line.item.configID.Value, pos_x, pos_y, color, font);		
+						circleAndWrite(line.item.configID, pos_x, pos_y, color, font);		
 					}
 				}
 				} catch(err) {}
@@ -300,13 +300,13 @@
 	{
 		for( var key in json.CrittersByID )
 		{		
-			var line = json.CrittersByID[key].Value;	
+			var line = json.CrittersByID[key];	
 
-			var pos_x = 4 * (line.position.x + offset_x);
-			var pos_y = 4 * (offset_y - line.position.y);			
+			var pos_x = 4 * (line.position[0] + offset_x);
+			var pos_y = 4 * (offset_y - line.position[1]);			
 			
-			var font = checkCollection( line.configID.Value, "critters" );			
-			circleAndWrite(line.configID.Value, pos_x, pos_y, "darkred", font);		
+			var font = checkCollection( line.configID, "critters" );			
+			circleAndWrite(line.configID, pos_x, pos_y, "darkred", font);		
 		}
 	}
 	
@@ -319,15 +319,15 @@
 			switch(line.mode)
 			{
 				case "ON_GROUND":
-				findInstance(line.itemInstanceID.Value, "ground");				
+				findInstance(line.itemInstanceID, "ground");				
 				break;
 				
 				case "INSIDE_HOLDER":
-				findInstance(line.itemInstanceID.Value, "inside");
+				findInstance(line.itemInstanceID, "inside");
 				break;
 				
 				case "IMP":
-				findImpItem(line.itemInstanceID.Value);				
+				findImpItem(line.itemInstanceID);				
 				break;			
 			}
 		}		
