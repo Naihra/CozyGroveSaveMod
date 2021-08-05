@@ -1,4 +1,7 @@
-# CURRENTLY APPS DON'T WORK FOR THE NEWEST STEAM BETA UPDATE (2.3.0)
+# Game version
+Current apps (except for the collection sort and inventory expander that didn't require changes) will only work with Steam Beta (game version 2.3.0).
+
+For older game versions use the released files, https://github.com/Naihra/CozyGroveSaveMod/releases/tag/2.2.0
 
 # Save location
 https://support.spryfox.com/hc/en-us/articles/1500003981321-Where-can-I-find-my-Cozy-Grove-logs-and-save-files-
@@ -34,8 +37,8 @@ These apps create a new save file from the information of the one you load. My r
 
 Name of the slots are "cg_save.sf" "cg_save_2.sf" "cg_save_3.sf".
 
-### Essence Recycler
-Takes essence and greens from your inventory only, not from storage. 
+### Recycler
+Takes imp essence and greens from your inventory only, not from storage. 
 
 In the current version you get 3 lower rank essences for each one you recycle and 2 greens.
 
@@ -64,7 +67,7 @@ Only the marked categories will be sorted.
 Grouped by type/season, type/color, color.
 
 ### Inventory Expander
-Expands or reduces the size of the backpack and the storage. To make it less of a cheat there is an optional "Donation" field, where you can input the amount you want to spend on the upgrade.
+Expands or reduces the size of the backpack, storage or wardrobe. To make it less of a cheat there is an optional "Donation" field, where you can input the amount you want to spend on the upgrade.
 
 The input values for rows can be positive or negative, and it will add or remove 4 slots per row to keep the inventories consistent. If after removing the slots you end up with less than what you should have based on the upgrades you've already purchased the game will add them when you load the save.
 
