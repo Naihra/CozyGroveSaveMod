@@ -1,5 +1,5 @@
 # Game version
-Current apps will only work with game version 2.3.0.
+Current apps will only work with game version 2.3.0. or higher.
 
 For older game versions use the released files, https://github.com/Naihra/CozyGroveSaveMod/releases/tag/2.2.0
 
