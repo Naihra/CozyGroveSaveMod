@@ -25,6 +25,26 @@
 	<input id="uploadSourceFile" type="file" accept=".sf">
 	<br><br>		
 	
+	<label>Map filter</label>
+	
+	<select id="mapHungry">
+		<option value="all">All</option>
+		<option value="X">Hungry</option>
+	</select> 
+	<select id="mapAge">
+		<option value="all">All</option>
+		<option value="1">Young</option>
+		<option value="2">Adult</option>
+		<option value="3">Mature</option>
+	</select> 	
+	<select id="mapType">
+		<option value="all">All</option>
+		<option value="bird">Bird</option>
+		<option value="deer">Deer</option>
+	</select> 		
+	<input id="btFilter" type="button" value="Apply filter" onclick="start( true, true );" disabled ="true">
+	<br><br>
+	
 	<canvas id="myCanvas" width="1000" height="1000" style="border:1px solid #c3c3c3;">
 		Your browser does not support the canvas element.
 	</canvas>
@@ -73,18 +93,20 @@
 	iniPaint();
 	document.getElementById("uploadSourceFile").addEventListener("change", loadSource, false);
 	
-	function start( result )
+	function start( result, filter )
 	{
 		if ( result )
 		{
 			clearCanvas();
 			paintGrid();
 			paintBase( false );
-			paintAnimals();
+			paintAnimals( filter );	
+			
+			document.getElementById("btFilter").disabled = false;
 		}
 	}
 	
-	function paintAnimals()
+	function paintAnimals( filter )
 	{
 		var contador = 1;
 		
@@ -102,48 +124,66 @@
 			var line = json.AnimalsByID[key];
 			
 			var nameSplit = line.configID.split("_");			
-	
-			var pos_x = 4 * (line.position[0] + offset_x) - (size / 3);
-			var pos_y = 4 * (offset_y - line.position[1]) - (size / 2);
-			
 			var name = arrayGame[arraySave.indexOf(nameSplit[2].concat(nameSplit[3]))];
-			var imgName = nameSplit[1].concat("_", name );
 			
-			loadAndDraw(rutaAnimal, "png", imgName, pos_x, pos_y, size / 1.5, size);
+			//Check the map filter
+			var mapHungry 	= document.getElementById("mapHungry").options[document.getElementById("mapHungry").selectedIndex].value;
+			var mapAge 		= document.getElementById("mapAge").options[document.getElementById("mapAge").selectedIndex].value;
+			var mapType 	= document.getElementById("mapType").options[document.getElementById("mapType").selectedIndex].value;
+			
+			var checkHungry = ( mapHungry == "all" || ( mapHungry == "X" && line.desiredItem != null ) ) ? true : false;
+			var checkAge 	= ( mapAge == "all"    || mapAge  == nameSplit[6] ) 						 ? true : false;
+			var checkType 	= ( mapType == "all"   || mapType == nameSplit[1] ) 						 ? true : false;
+			
+			if ( checkHungry && checkAge && checkType )
+			{			
+				var pos_x = 4 * (line.position[0] + offset_x) - (size / 3);
+				var pos_y = 4 * (offset_y - line.position[1]) - (size / 2);			
 				
-			contador += 1;				
-			var row 		  = table.insertRow(contador);				
-			var cell_id       = row.insertCell(0);
-			var cell_posx     = row.insertCell(1);
-			var cell_posy     = row.insertCell(2);
-			var cell_saveName = row.insertCell(3);
-			var cell_age      = row.insertCell(4);
-			var cell_gameName = row.insertCell(5);
-			var cell_type     = row.insertCell(6);
-			var cell_feds     = row.insertCell(7);
-			var cell_level    = row.insertCell(8);
-			var cell_want     = row.insertCell(9);			
-			var cell_like     = row.insertCell(10);
-			var cell_dislike  = row.insertCell(11);
-			
-			cell_id.innerHTML 		= contador;
-			cell_type.innerHTML 	= nameSplit[1];
-			cell_saveName.innerHTML = line.configID;
-			cell_gameName.innerHTML = name;
-			cell_age.innerHTML 		= arrayAge[nameSplit[6]];
-			cell_feds.innerHTML 	= line.fedCount;
-			cell_level.innerHTML 	= line.shouldUpgradeWhenFed;
-			if ( line.desiredItem != null )
-			{
-				cell_want.innerHTML = line.desiredItem.configID;
+				var imgName = nameSplit[1].concat("_", name );
+				
+				loadAndDraw(rutaAnimal, "png", imgName, pos_x, pos_y, size / 1.5, size);
 			}
-			cell_posx.innerHTML 	= line.position[0];
-			cell_posy.innerHTML 	= line.position[1];
-            cell_like.innerHTML 	= arrayLike[nameSplit[4]];
-			cell_dislike.innerHTML 	= arrayDisl[nameSplit[5]];
+				
+			if ( filter != true )
+			{
+				contador += 1;				
+				var row 		  = table.insertRow(contador);				
+				var cell_id       = row.insertCell(0);
+				var cell_posx     = row.insertCell(1);
+				var cell_posy     = row.insertCell(2);
+				var cell_saveName = row.insertCell(3);
+				var cell_age      = row.insertCell(4);
+				var cell_gameName = row.insertCell(5);
+				var cell_type     = row.insertCell(6);
+				var cell_feds     = row.insertCell(7);
+				var cell_level    = row.insertCell(8);
+				var cell_want     = row.insertCell(9);			
+				var cell_like     = row.insertCell(10);
+				var cell_dislike  = row.insertCell(11);
+				
+				cell_id.innerHTML 		= contador;
+				cell_type.innerHTML 	= nameSplit[1];
+				cell_saveName.innerHTML = line.configID;
+				cell_gameName.innerHTML = name;
+				cell_age.innerHTML 		= arrayAge[nameSplit[6]];
+				cell_feds.innerHTML 	= line.fedCount;
+				cell_level.innerHTML 	= line.shouldUpgradeWhenFed;
+				if ( line.desiredItem != null )
+				{
+					cell_want.innerHTML = line.desiredItem.configID;
+				}
+				cell_posx.innerHTML 	= line.position[0];
+				cell_posy.innerHTML 	= line.position[1];
+				cell_like.innerHTML 	= arrayLike[nameSplit[4]];
+				cell_dislike.innerHTML 	= arrayDisl[nameSplit[5]];
+			}
 		}				
-		table.deleteRow(1);	
-		table.style.display = 'block';
+		if ( filter != true )
+		{
+			table.deleteRow(1);	
+			table.style.display = 'block';
+		}
 	}
 	</script>
 </body>
