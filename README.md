@@ -1,5 +1,5 @@
 # Game version
-Current apps (except for the collection sort and inventory expander that didn't require changes) will only work with Steam Beta (game version 2.3.0).
+Current apps will only work with game version 2.3.0.
 
 For older game versions use the released files, https://github.com/Naihra/CozyGroveSaveMod/releases/tag/2.2.0
 
@@ -23,7 +23,7 @@ Shows all the animals on map and lists their details, including if they are hung
 
 The food names are the in-save coded ones.
 
-The table can be sorted by clicking on the header.
+The table can be sorted by clicking on the header, and the animals that show on the map can be filtered by hunger, age and type.
 
 ### Finder
 Locates any item that's on the ground, can use any of the preset selection or input a string in "Custom search", then press Enter or the button.
