@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Cosy Grove iOS-Steam</title>
+	<style type="text/css">
+		a,label,input {		
+		font-family: 'Courier New', monospace;		
+		margin: 5px;
+		}
+	</style>
+	<script src="./data/function.js"></script>
+</head>
+
+<body>
+
+	<h1>Cozy Grove iOS to Steam converter</h1>	
+	
+	<label for="uploadSourceFile">Select your save</label><br>
+	<input id="uploadSourceFile" type="file" accept=".sf">
+	<br><br>
+	
+	<input id="bt_save" type="button" value="Save" onclick="save( JSON, true );" disabled ="true">
+	<br><br>
+	
+	<script>
+	
+	document.getElementById("uploadSourceFile").addEventListener("change", loadSource, false);
+	
+	function start( result )
+	{
+		if ( result )
+		{
+			document.getElementById("bt_save").disabled = false;
+		}
+	}
+	
+	</script>
+</body>
+</html>

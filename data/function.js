@@ -32,7 +32,7 @@ function loadSource()
 
 	reader.onload = (e) => {
 		const fileStr = e.target.result;
-		fileTkn = fileStr.split(',');			
+		fileTkn = fileStr.split(/,|\n/);	
 		try
 		{
 			const jsonStr = window.atob(fileTkn[1]);
