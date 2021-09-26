@@ -20,24 +20,32 @@
 	<input id="uploadSourceFile" type="file" accept=".sf">
 	<br><br>
 
-	<img src="./data/essence/memory_2_imp.jpg" alt="Happy imp essence" >
+	<img src="./data/recycle/memory_2_imp.jpg" alt="Happy imp essence" >
 	<input id="check_m2i" type="checkbox" checked>
 	<input id="out_m2i" type="int" size="2" disabled="true"> 
 	
-	<img src="./data/essence/green_fancy.png" alt="Fancy greens" >
+	<img src="./data/recycle/green_fancy.png" alt="Fancy greens" >
 	<input id="check_g2" type="checkbox" checked>
 	<input id="out_g2" type="int" size="2" disabled="true"> 
+	
+	<img src="./data/recycle/ingot_silver.png" alt="Fancy greens" >
+	<input id="check_is" type="checkbox" checked>
+	<input id="out_is" type="int" size="2" disabled="true"> 
 	<br>
 	
-	<img src="./data/essence/memory_3_imp.jpg" alt="Joyous imp essence" >
+	<img src="./data/recycle/memory_3_imp.jpg" alt="Joyous imp essence" >
 	<input id="check_m3i" type="checkbox" checked>
 	<input id="out_m3i" type="int" size="2" disabled="true"> 
 	
-	<img src="./data/essence/green_deluxe.png" alt="Deluxe greens" >
+	<img src="./data/recycle/green_deluxe.png" alt="Deluxe greens" >
 	<input id="check_g3" type="checkbox" checked>
 	<input id="out_g3" type="int" size="2" disabled="true"> 
-	<br>
 	
+	<img src="./data/recycle/ingot_gold.png" alt="Fancy greens" >
+	<input id="check_ig" type="checkbox" checked>
+	<input id="out_ig" type="int" size="2" disabled="true"> 
+	<br>
+		
 	<input id="bt_recycle" type="button" value="Recycle" onclick="recycle();" disabled ="true">
 	<br><br>
 	
@@ -56,8 +64,9 @@
 	function readInventory()
 	{	
 		arrayPos   = [];
-		arrayName  = [ "m2i", "m3i", "g2", "g3" ];
-		var arrayValue = [ 0,0,0,0];			
+		arrayName  = [ "m2i", "m3i", "g2", "g3", "is", "ig" ];
+		arrayIngot = [ "iron", "silver", "gold" ];
+		var arrayValue = [ 0,0,0,0,0,0,0];			
 	
 		for (var key in json.Player.Inventory.SlotDisplayOrder)
 		{
@@ -66,7 +75,12 @@
 			if (line != null ) {
 			
 			var nameSplit = line.item.configID.split("_");
-			if ( ( ( nameSplit[0] == "memory" && nameSplit[2] == "imp" ) || nameSplit[0] == "greens" )  && nameSplit[1] != "1" )
+			
+			var checkEssence = ( nameSplit[0] == "memory" && nameSplit[2] == "imp" && nameSplit[1] != "1" ) ? true : false;
+			var checkGreens  = ( nameSplit[0] == "greens" 						   && nameSplit[1] != "1" ) ? true : false;
+			var checkIngot   = ( nameSplit[0] == "ingot"  && nameSplit[1] != "iron" 					  ) ? true : false;
+			
+			if ( checkEssence || checkGreens || checkIngot )
 			{
 				try {
 				var nameShort = nameSplit[0].substring(0,1).concat(nameSplit[1].substring(0,1), nameSplit[2].substring(0,1));
@@ -77,8 +91,7 @@
 				
 				arrayValue[arrayName.indexOf(nameShort)] += line.amount;
 				
-				arrayPos.push(key);
-			
+				arrayPos.push(key);			
 			}}	
 		}				
 
@@ -95,61 +108,65 @@
 			document.getElementById(nameOut).value = value;
 			document.getElementById(nameCheck).checked  = ( value == 0 ) ? false : true;			
 			document.getElementById(nameCheck).disabled = ( value == 0 ) ? true : false;			
-			
 		}
 	}	
 
 	function recycle() {			
 			
-			var checkSave = false;
+		var checkSave = false;
+		
+		for ( var i in arrayName )
+		{
+			nameCheck = "check_".concat(arrayName[i]);
+			arrayName[i] = ( document.getElementById(nameCheck).checked ) ? arrayName[i] : 0;				
+		}
+		
+		for ( var i in arrayPos )
+		{
+			var line = json.Player.Inventory.SlotDisplayOrder[arrayPos[i]];				
+			var nameSplit = line.item.configID.split("_");
 			
-			for ( var i in arrayName )
-			{
-				nameCheck = "check_".concat(arrayName[i]);
-				arrayName[i] = ( document.getElementById(nameCheck).checked ) ? arrayName[i] : 0;				
+			try {
+			var nameShort = nameSplit[0].substring(0,1).concat(nameSplit[1].substring(0,1), nameSplit[2].substring(0,1));
+			}
+			catch(err) {
+			var nameShort = nameSplit[0].substring(0,1).concat(nameSplit[1].substring(0,1));
 			}
 			
-			for ( var i in arrayPos )
+			if ( arrayName.indexOf(nameShort) != -1 )
 			{
-				var line = json.Player.Inventory.SlotDisplayOrder[arrayPos[i]];
-				
-				const factor = 3;
-				const factorGreen = 2;
-				
-				var nameSplit = line.item.configID.split("_");
-				
-				try {
-				var nameShort = nameSplit[0].substring(0,1).concat(nameSplit[1].substring(0,1), nameSplit[2].substring(0,1));
-				}
-				catch(err) {
-				var nameShort = nameSplit[0].substring(0,1).concat(nameSplit[1].substring(0,1));
-				}
-				
-				if ( arrayName.indexOf(nameShort) != -1 )
+				switch ( nameSplit[0] )
 				{
-					switch ( nameSplit[0] )
-					{
-						case "memory":
-						line.amount *= factor;						
-						break;
-						
-						case "greens":
-						line.amount *= factorGreen;
-						break;
-					}
-					//var aux = parseInt(nameSplit[1]);
-					nameSplit[1] = parseInt(nameSplit[1]) - 1;
-					line.item.configID = nameSplit.join("_");				
-					checkSave = true;
+					case "memory":
+					line.amount *= 3;
+					
+					nameSplit[1] = parseInt(nameSplit[1]) - 1;					
+					break;
+					
+					case "greens":
+					line.amount *= 2;
+					
+					nameSplit[1] = parseInt(nameSplit[1]) - 1;		
+					break;
+					
+					case "ingot":
+					line.amount *= 2;
+					
+					nameSplit[1] = arrayIngot[arrayIngot.indexOf(nameSplit[1]) - 1];
+					break;		
+					
 				}			
-			}
-			
-			if ( checkSave )
-			{
-				document.getElementById("bt_recycle").disabled = true;				
-			}
-			
-			save( JSON, checkSave );	
+				line.item.configID = nameSplit.join("_");					
+				checkSave = true;
+			}			
+		}
+		
+		if ( checkSave )
+		{
+			document.getElementById("bt_recycle").disabled = true;				
+		}
+		
+		save( JSON, checkSave );	
 	}
 	</script>
 </body>

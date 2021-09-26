@@ -23,16 +23,27 @@
 	<label for="findItem">What to look for</label>
 	<select id="findItem" onchange="setCustom()" disabled="true">
 		<option value="findCustom">--Custom search--</option>
+		<option value="findMix">--Presets--</option>
 		<option value="findImp">Imps</option>	
 		<option value="findFora">Forage</option>
 		<option value="findRock">Rocks</option>
 		<option value="findWild">Wild trees</option>			
 		<option value="findCrit">Critters</option>				
-		<option value="findHid">Hidden objects</option>				
+		<option value="findHid">Hidden objects</option>										
+		<option value="findAnim">Hungry animals</option>										
 	</select> 
 	
 	<input id="btFind" type="button" value="Find me!" onclick="findMe();" disabled="false">
-	<input id="inputCustom" type="text" disabled="false" style="display:block">
+	<br>
+	<input id="inputCustom" type="text" disabled="false" style="display:inline">
+
+	<input id="chkImp"  type="checkbox" disabled="true" style="display:none"><label style="display:none" id="labImp"  onclick="markFind(0);" >Imps</label>
+	<input id="chkFora" type="checkbox" disabled="true" style="display:none"><label style="display:none" id="labFora" onclick="markFind(1);" >Forage</label>
+	<input id="chkRock" type="checkbox" disabled="true" style="display:none"><label style="display:none" id="labRock" onclick="markFind(2);" >Rocks</label>
+	<input id="chkWild" type="checkbox" disabled="true" style="display:none"><label style="display:none" id="labWild" onclick="markFind(3);" >Wild trees</label>
+	<input id="chkCrit" type="checkbox" disabled="true" style="display:none"><label style="display:none" id="labCrit" onclick="markFind(4);" >Critters</label>
+	<input id="chkHid"  type="checkbox" disabled="true" style="display:none"><label style="display:none" id="labHid"  onclick="markFind(5);" >Hidden objects</label>
+	<input id="chkAnim" type="checkbox" disabled="true" style="display:none"><label style="display:none" id="labAnim" onclick="markFind(6);" >Hungry animals</label>
 	<br><br>
 	
 	<canvas id="myCanvas" width="1000" height="1000" style="border:1px solid #c3c3c3;">
@@ -40,6 +51,8 @@
 	</canvas>
 		
 	<script>		
+	arrayFind = ["Imp", "Fora", "Rock", "Wild", "Crit", "Hid", "Anim"];
+	
 	iniPaint();
 	
 	document.getElementById("uploadSourceFile").addEventListener("change", loadSource, false );
@@ -80,158 +93,75 @@
 		var item = document.getElementById("findItem").options[document.getElementById("findItem").selectedIndex].value;
 		
 		switch (item)
-		{
-		case "findRock":		
-		findStart("rock_", "rock");
-		break;
-		
-		case "findWild":
-		findStart("wild_");
-		break;
-		
-		case "findImp":
-		findImps();
-		break;
-		
-		case "findCustom":
-		var item = document.getElementById("inputCustom").value;
-		findCustom( item );
-		break;
-		
-		case "findFora":
-		findForage();
-		break;
-		
-		case "findCrit":
-		findCritters();
-		break;		
-		
-		case "findHid":
-		findHidden();
+		{		
+			case "findCustom":
+			var itemCustom = document.getElementById("inputCustom").value;
+			findCustom( itemCustom );
+			break;
+			
+			case "findMix":
+			findMix();
+			break;
+					
+			case "findRock":		
+			findStart("rock_", "rock");
+			break;
+			
+			case "findWild":
+			findStart("wild_");
+			break;
+			
+			case "findImp":
+			findImps();
+			break;
+					
+			case "findFora":
+			findForage();
+			break;
+			
+			case "findCrit":
+			findCritters();
+			break;		
+			
+			case "findHid":
+			findHidden();
+			breakM;
+			
+			case "findAnim":
+			findAnimals();
+			break;			
 		}			
 	}
 	
-	function findStart( item, special )
+	function findMix()
 	{
-		for( var key in json.ItemsOnGroundData.OnGround )
+		if ( document.getElementById("chkCrit").checked )
 		{
-			var leng = item.length;
-			var line = json.ItemsOnGroundData.OnGround[key];
-			
-			try {						
-			if ( line.item.configID.substring(0,leng) == item )
-			{
-				pos_x = 4 * (line.position[0] + offset_x);
-				pos_y = 4 * (offset_y - line.position[1]);
-				
-				if ( special != null )
-				{	
-					var size = 50;
-						
-					pos_x -= size / 2;
-					pos_y -= size / 2;
-					
-					var nameSplit  = line.item.configID.split("_");	
-					var imgName = nameSplit[1].concat("_", nameSplit[2], "_", line.item.state.harvestable.hasLoot );
-				
-					loadAndDraw(rutaRocks, "png", imgName, pos_x, pos_y, size, size);	
-				} 
-				else
-				{		
-					circleAndWrite(line.item.configID, pos_x, pos_y);	
-				}
-			}
-			} catch(err) { }
+			findCritters();
 		}
-	}
-	
-	function findInstance( item, type )
-	{
-		for( var key in json.ItemsOnGroundData.OnGround )
+		if ( document.getElementById("chkAnim").checked )
 		{
-			var line = json.ItemsOnGroundData.OnGround[key];
-			
-			try {						
-			if ( key == item )
-			{
-
-				pos_x = 4 * (line.position[0] + offset_x);
-				pos_y = 4 * (offset_y - line.position[1]);			
-				
-				switch( type )
-				{
-					case "ground":
-						var name = line.item.configID;
-						var color = "black";
-					break;
-					
-					case "inside":
-						var name = line.item.state.instanceLootRewards[0].itemId;
-						var color = "brown";
-					break;
-				}
-	
-				circleAndWrite(name, pos_x, pos_y, color);	
-			}
-			} catch(err) { }
+			findAnimals();
 		}
-	}
-	
-	function findImps()
-	{
-		const size = 30;
-	
-		for( var key in json.PersistedPrefabsByID )
-		{				
-			var line = json.PersistedPrefabsByID[key];
-			
-			if ( line.prefabName.substring(0,4) == "Imps" )
-			{			
-				pos_x = 4 * (line.position[0] + offset_x) - (size / 2);
-				pos_y = 4 * (offset_y - line.position[1]) - (size / 2);
-							
-				var nameSplit = line.prefabName.split("_");
-				var imgName = nameSplit[0].concat(nameSplit[1]);
-				loadAndDraw(rutaImp, "png", imgName, pos_x, pos_y, size, size);			
-			}
-		}		
-	}
-	
-	function findSkip()
-	{
-		const size = 30;
-	
-		for( var key in json.PersistedPrefabsByID )
-		{				
-			var line = json.PersistedPrefabsByID[key];
-			
-			if ( line.prefabName.substring(0,4) != "Imps" )
-			{			
-				pos_x = 4 * (line.position[0] + offset_x) - (size / 2);
-				pos_y = 4 * (offset_y - line.position[1]) - (size / 2);
-					
-				var imgName = line.data.configID;				
-				loadAndDraw(rutaForage, "png", imgName, pos_x, pos_y, size, size);			
-			}
-		}		
-	}
-	
-	function findImpItem(item)
-	{
-		for( var key in json.ImpsByID )
+		if ( document.getElementById("chkHid").checked )
 		{
-			var line = json.ImpsByID[key];
-			
-			try {						
-			if ( key == item )
-			{
-				pos_x = 4 * (line.position[0] + offset_x);
-				pos_y = 4 * (offset_y - line.position[1]);			
-	
-				circleAndWrite(line.rewardItemID, pos_x, pos_y, "darkblue");	
-			}
-			} catch(err) { }
-			
+			findHidden();
+		}
+		if ( document.getElementById("chkFora").checked )
+		{
+			findForage();
+		}
+		if ( document.getElementById("chkImp").checked || document.getElementById("chkFora").checked );
+		{
+			findImps();
+		}
+		if ( document.getElementById("chkWild").checked )
+		{
+			findStart("wild_");
+		}
+		if ( document.getElementById("chkRock").checked )
+		{
+			findStart("rock_", "rock");
 		}
 	}
 	
@@ -296,6 +226,66 @@
 		}
 	}	 
 	
+	function findStart( item, special )
+	{
+		for( var key in json.ItemsOnGroundData.OnGround )
+		{
+			var leng = item.length;
+			var line = json.ItemsOnGroundData.OnGround[key];
+			
+			try {						
+			if ( line.item.configID.substring(0,leng) == item )
+			{
+				pos_x = 4 * (line.position[0] + offset_x);
+				pos_y = 4 * (offset_y - line.position[1]);
+				
+				if ( special != null )
+				{	
+					var size = 50;
+						
+					pos_x -= size / 2;
+					pos_y -= size / 2;
+					
+					var nameSplit  = line.item.configID.split("_");	
+					var imgName = nameSplit[1].concat("_", nameSplit[2], "_", line.item.state.harvestable.hasLoot );
+				
+					loadAndDraw(rutaRocks, "png", imgName, pos_x, pos_y, size, size);	
+				} 
+				else
+				{		
+					circleAndWrite(line.item.configID, pos_x, pos_y);	
+				}
+			}
+			} catch(err) { }
+		}
+	}	
+	
+	function findImps()
+	{
+		const size = 30;
+	
+		for( var key in json.PersistedPrefabsByID )
+		{				
+			var line = json.PersistedPrefabsByID[key];
+			
+			var pos_x = 4 * (line.position[0] + offset_x) - (size / 2);
+			var pos_y = 4 * (offset_y - line.position[1]) - (size / 2);
+			
+			if ( line.prefabName.substring(0,4) == "Imps" && document.getElementById("chkImp").checked )
+			{	
+				var nameSplit = line.prefabName.split("_");
+				var imgName = nameSplit[0].concat(nameSplit[1]);
+				loadAndDraw(rutaImp, "png", imgName, pos_x, pos_y, size, size);			
+			}
+			//Skipping shells are in the Imps table, but I consider them "Forage"
+			if ( line.prefabName.substring(0,4) != "Imps" && document.getElementById("chkFora").checked )
+			{					
+				var imgName = line.data.configID;				
+				loadAndDraw(rutaForage, "png", imgName, pos_x, pos_y, size, size);	
+			}
+		}		
+	}
+		
 	function findCritters( collection )
 	{
 		for( var key in json.CrittersByID )
@@ -333,6 +323,56 @@
 		}		
 	}
 	
+	function findInstance( item, type )
+	{
+		for( var key in json.ItemsOnGroundData.OnGround )
+		{
+			var line = json.ItemsOnGroundData.OnGround[key];
+			
+			try {						
+			if ( key == item )
+			{
+
+				pos_x = 4 * (line.position[0] + offset_x);
+				pos_y = 4 * (offset_y - line.position[1]);			
+				
+				switch( type )
+				{
+					case "ground":
+						var name = line.item.configID;
+						var color = "black";
+					break;
+					
+					case "inside":
+						var name = line.item.state.instanceLootRewards[0].itemId;
+						var color = "brown";
+					break;
+				}
+	
+				circleAndWrite(name, pos_x, pos_y, color);	
+			}
+			} catch(err) { }
+		}
+	}
+	
+	function findImpItem(item)
+	{
+		for( var key in json.ImpsByID )
+		{
+			var line = json.ImpsByID[key];
+			
+			try {						
+			if ( key == item )
+			{
+				pos_x = 4 * (line.position[0] + offset_x);
+				pos_y = 4 * (offset_y - line.position[1]);			
+	
+				circleAndWrite(line.rewardItemID, pos_x, pos_y, "darkblue");	
+			}
+			} catch(err) { }			
+		}
+	}
+	
 	function findForage()
 	{
 		findCustom( "shrubbery", "purple", "0_2" );
@@ -340,7 +380,118 @@
 		findCustom( "leafpile", "darkgreen", "3_4" );
 		findCustom( "shell", "blue" );
 		findCustom( "spirit_well" );
-		findSkip();
+		//findSkip(); //Included in findImps function
+	}
+	
+	/*function findSkip()
+	{
+		const size = 30;
+	
+		for( var key in json.PersistedPrefabsByID )
+		{				
+			var line = json.PersistedPrefabsByID[key];
+			
+			if ( line.prefabName.substring(0,4) != "Imps" )
+			{			
+				pos_x = 4 * (line.position[0] + offset_x) - (size / 2);
+				pos_y = 4 * (offset_y - line.position[1]) - (size / 2);
+					
+				var imgName = line.data.configID;				
+				loadAndDraw(rutaForage, "png", imgName, pos_x, pos_y, size, size);			
+			}
+		}		
+	}*/
+	
+	function findAnimals( )
+	{
+		const arrayGame  = ["ornate","spectral","sad","spiny","demon","moon","eerie","spirit","forest","blood"];
+		const arraySave  = ["darkyellow","darkpurple","darkblue","darkgreen","darkred","lightyellow","lightpurple","lightblue","lightgreen","lightred"];
+		var catFound = false;
+				
+		for( var key in json.AnimalsByID )
+		{			
+			var line = json.AnimalsByID[key];
+			
+			var nameSplit = line.configID.split("_");			
+			var name = arrayGame[arraySave.indexOf(nameSplit[2].concat(nameSplit[3]))];
+			
+			if ( line.desiredItem != null )
+			{								
+				if ( nameSplit[1] != "cat" )
+				{		
+					var size = 40;
+					var pos_x = 4 * (line.position[0] + offset_x) - (size / 3);
+					var pos_y = 4 * (offset_y - line.position[1]) - (size / 2);							
+				}
+				else
+				{
+					//First cat found -> paint darker lines for the inside of the house
+					if ( catFound == false )
+					{
+						catFound = true;				
+						paintGridHouse();				
+					}
+				
+					var size = 50;
+					var pos_x = catX( line.position[0], size );
+					var pos_y = catY( line.position[1], size );					
+				}
+				var imgName = nameSplit[1].concat("_", name );					
+				loadAndDraw(rutaAnimal, "png", imgName, pos_x, pos_y, size / 1.5, size);
+			}
+		}		
+	}	
+	
+	function catX( pos, size )
+	{
+		var roomE = [  282,  302, gridC 	];
+		var roomB = [  140,  160, gridC 	];
+		var roomL = [ -2,    18,  0     	];
+		var roomR = [ -143, -123, 2 * gridC ];
+		
+		if ( pos >= roomE[0] )
+		{
+			var posN = ( ( pos - roomE[0] ) * gridC / 20 ) + roomE[2] - size / 3;
+		}
+		else if ( pos >= roomB[0] )
+		{
+			var posN = ( ( pos - roomB[0] ) * gridC / 20 ) + roomB[2] - size / 3;
+		}
+		else if ( pos >= roomL[0] )
+		{
+			var posN = ( ( pos - roomL[0] ) * gridC / 20 ) + roomL[2] - size / 3;
+		}
+		else if ( pos >= roomR[0] )
+		{
+			var posN = ( ( pos - roomR[0] ) * gridC / 20 ) + roomR[2] - size / 3;
+		}		
+		return posN;
+	}
+	
+	function catY( pos, size )
+	{
+		var roomE = [ -838, -858, canvas.height - gridC 	];
+		var roomB = [ -697, -717, canvas.height - 2 * gridC	];
+		var roomL = [ -555, -575, canvas.height - gridC 	];
+		var roomR = [ -414, -434, canvas.height - gridC 	];
+		
+		if ( pos <= roomE[0] )
+		{
+			var posN = roomE[2] - ( ( pos - roomE[0] ) * gridC / 20 ) - size / 2;
+		}
+		else if ( pos <= roomB[0] )
+		{
+			var posN = roomB[2] - ( ( pos - roomB[0] ) * gridC / 20 ) - size / 2;
+		}
+		else if ( pos <= roomL[0] )
+		{
+			var posN = roomL[2] - ( ( pos - roomL[0] ) * gridC / 20 ) - size / 2;
+		}
+		else if ( pos <= roomR[0] )
+		{
+			var posN = roomR[2] - ( ( pos - roomR[0] ) * gridC / 20 ) - size / 2;
+		}		
+		return posN;		
 	}
 	
 	function checkCollection( item, cat )
@@ -367,17 +518,55 @@
 		return font;
 	}
 	
+	function markFind( index )
+	{
+		document.getElementById("chk".concat(arrayFind[index])).checked = ( document.getElementById("chk".concat(arrayFind[index])).checked ) ? false : true;
+	}
+	
 	function setCustom()
 	{
 		if ( document.getElementById("findItem").options[document.getElementById("findItem").selectedIndex].value == "findCustom" )
 		{
 			document.getElementById("inputCustom").disabled = false;
-			document.getElementById("inputCustom").style.display = 'block';
+			document.getElementById("inputCustom").style.display = 'inline';
+			
+			for ( var key in arrayFind )
+			{
+				document.getElementById("chk".concat(arrayFind[key])).disabled 	  	= true;
+				document.getElementById("chk".concat(arrayFind[key])).style.display = "none";
+				document.getElementById("lab".concat(arrayFind[key])).style.display = "none";
+				document.getElementById("chk".concat(arrayFind[key])).checked	 	= false;		
+			}
+				
+			
+		}
+		else if ( document.getElementById("findItem").options[document.getElementById("findItem").selectedIndex].value == "findMix" )
+		{
+			document.getElementById("inputCustom").disabled = true;
+			document.getElementById("inputCustom").style.display = 'none';		
+			
+			for ( var key in arrayFind )
+			{
+				document.getElementById("chk".concat(arrayFind[key])).disabled 	  	= false;
+				document.getElementById("chk".concat(arrayFind[key])).style.display = "inline";
+				document.getElementById("lab".concat(arrayFind[key])).style.display = "inline";
+				document.getElementById("chk".concat(arrayFind[key])).checked	 	= false;	
+			}
+						
 		}
 		else
 		{
 			document.getElementById("inputCustom").disabled = true;
-			document.getElementById("inputCustom").style.display = 'none';			
+			document.getElementById("inputCustom").style.display = 'none';	
+
+			for ( var key in arrayFind )
+			{
+				document.getElementById("chk".concat(arrayFind[key])).disabled 	  	= true;
+				document.getElementById("chk".concat(arrayFind[key])).style.display = "none";
+				document.getElementById("lab".concat(arrayFind[key])).style.display = "none";
+				document.getElementById("chk".concat(arrayFind[key])).checked	 	= false;
+			}
+				
 		}
 	}
 	</script>

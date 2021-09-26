@@ -41,6 +41,8 @@
 		<option value="all">All</option>
 		<option value="bird">Bird</option>
 		<option value="deer">Deer</option>
+		<option value="rodent">Rodent</option>
+		<option value="cat">Cat</option>
 	</select> 		
 	<input id="btFilter" type="button" value="Apply filter" onclick="start( true, true );" disabled ="true">
 	<br><br>
@@ -48,14 +50,14 @@
 	<canvas id="myCanvas" width="1000" height="1000" style="border:1px solid #c3c3c3;">
 		Your browser does not support the canvas element.
 	</canvas>
-
+	
 	<div class="table">
 	<table class="sortable" id="animalTable" style="display:none">
 	<thead>
 		<tr>
 			<th>#</th>
-			<th>X</th>
-			<th>Y</th>
+			<th>Pos X</th>
+			<th>Pos Y</th>
 			<th>Full Name</th>
 			<th>Age</th>
 			<th>Type</th>
@@ -64,11 +66,13 @@
 			<th>Ready to level</th>
 			<th>Want to eat</th>
 			<th>Like</th>
+			<th>Like</th>
 			<th>Dislike</th>
 		</tr>
 	</thead>
 	<tbody>
 		<tr>
+			<td></td>
 			<td></td>
 			<td></td>
 			<td></td>
@@ -90,7 +94,8 @@
 	
 	<script>
 	
-	iniPaint();
+	table = document.getElementById("animalTable");
+	iniPaint();	
 	document.getElementById("uploadSourceFile").addEventListener("change", loadSource, false);
 	
 	function start( result, filter )
@@ -100,25 +105,37 @@
 			clearCanvas();
 			paintGrid();
 			paintBase( false );
-			paintAnimals( filter );	
 			
+			var mapHungry 	= document.getElementById("mapHungry").options[document.getElementById("mapHungry").selectedIndex].value;
+			var mapAge 		= document.getElementById("mapAge").options[document.getElementById("mapAge").selectedIndex].value;
+			var mapType 	= document.getElementById("mapType").options[document.getElementById("mapType").selectedIndex].value;
+			paintAnimals( filter, mapHungry, mapAge, mapType );					
+	
 			document.getElementById("btFilter").disabled = false;
 		}
 	}
 	
-	function paintAnimals( filter )
+	function paintAnimals( filter, mapHungry, mapAge, mapType )
 	{
 		var contador = 1;
+		var catFound = false;
 		
-		const arrayGame = ["ornate","spectral","sad","spiny","demon","moon","eerie","spirit","forest","blood" ];
-		const arraySave = ["darkyellow","darkpurple","darkblue","darkgreen","darkred","lightyellow","lightpurple","lightblue","lightgreen","lightred" ];
-		const arrayAge  = ["","young","adult","mature"];
-		const arrayLike	= ["","rustic","cozy","natural","spooky","bustling"];
-		const arrayDisl = ["","deer","bird","imp","common","uncommon"];
-		const size = 30;
-		
-		var table = document.getElementById("animalTable");
-			
+		const arrayGame 	= ["ornate","spectral","sad","spiny","demon","moon","eerie","spirit","forest","blood"];
+		const arraySave 	= ["darkyellow","darkpurple","darkblue","darkgreen","darkred","lightyellow","lightpurple","lightblue","lightgreen","lightred"];
+		const arrayAge  	= ["","young","adult","mature"];
+		const arrayLikeT	= ["decoration","spooky","flower bush","rustic","rare","","berry bush","spirit","potted flower","fruit tree"];
+		const arrayLike		= ["","rustic","cozy","natural","spooky","bustling"];
+		const arrayDisl 	= ["","deer","bird","imp","common","uncommon"];
+		const arrayLikeC	= ["","rustic, bustling","cozy","","fun","spooky"];
+		const arrayDislC	= ["","","","","","","bustling","spooky","common","rustic","fun","spooky","bustling","fun","bustling","rustic","spooky","bustling","common","rustic","natural","bustling","fun","common","rustic","natural"];
+		const arrayLikeCRus = ["13", "18", "20", "22", "25"];
+		const arrayLikeCCoz = ["1","2","4","5","12","16","17","18","20","22","24"];
+		const arrayLikeCNat = ["1","4","9","11","16","17","18","19","21","24"];
+		const arrayLikeCFun = ["3","4","8","15","23","25"];
+		const arrayLikeCSpo = ["2","3","5","10","14","19"];
+		const arrayLikeCCom = ["1","2","3","5","6","17","19","21"];
+		const arrayLikeCBus = ["7","16","20","23"];
+
 		for( var key in json.AnimalsByID )
 		{			
 			var line = json.AnimalsByID[key];
@@ -126,22 +143,33 @@
 			var nameSplit = line.configID.split("_");			
 			var name = arrayGame[arraySave.indexOf(nameSplit[2].concat(nameSplit[3]))];
 			
-			//Check the map filter
-			var mapHungry 	= document.getElementById("mapHungry").options[document.getElementById("mapHungry").selectedIndex].value;
-			var mapAge 		= document.getElementById("mapAge").options[document.getElementById("mapAge").selectedIndex].value;
-			var mapType 	= document.getElementById("mapType").options[document.getElementById("mapType").selectedIndex].value;
+			//First cat found -> paint darker lines for the inside of the house
+			if ( catFound == false && nameSplit[1] == "cat" )
+			{
+				catFound = true;				
+				paintGridHouse();				
+			}
 			
+			//Check the map filter
 			var checkHungry = ( mapHungry == "all" || ( mapHungry == "X" && line.desiredItem != null ) ) ? true : false;
 			var checkAge 	= ( mapAge == "all"    || mapAge  == nameSplit[6] ) 						 ? true : false;
 			var checkType 	= ( mapType == "all"   || mapType == nameSplit[1] ) 						 ? true : false;
 			
 			if ( checkHungry && checkAge && checkType )
 			{			
-				var pos_x = 4 * (line.position[0] + offset_x) - (size / 3);
-				var pos_y = 4 * (offset_y - line.position[1]) - (size / 2);			
-				
-				var imgName = nameSplit[1].concat("_", name );
-				
+				if ( nameSplit[1] != "cat" )
+				{		
+					var size = 40;
+					var pos_x = 4 * (line.position[0] + offset_x) - (size / 3);
+					var pos_y = 4 * (offset_y - line.position[1]) - (size / 2);							
+				}
+				else
+				{
+					var size = 50;
+					var pos_x = catX( line.position[0], size );
+					var pos_y = catY( line.position[1], size );					
+				}
+				var imgName = nameSplit[1].concat("_", name );					
 				loadAndDraw(rutaAnimal, "png", imgName, pos_x, pos_y, size / 1.5, size);
 			}
 				
@@ -159,24 +187,78 @@
 				var cell_feds     = row.insertCell(7);
 				var cell_level    = row.insertCell(8);
 				var cell_want     = row.insertCell(9);			
-				var cell_like     = row.insertCell(10);
-				var cell_dislike  = row.insertCell(11);
+				var cell_like_t   = row.insertCell(10);
+				var cell_like     = row.insertCell(11);
+				var cell_dislike  = row.insertCell(12);
 				
-				cell_id.innerHTML 		= contador;
+				cell_id.innerHTML 		= contador - 1;
+				cell_id.innerHTML       = cell_id.innerHTML.padStart(2, '0');
 				cell_type.innerHTML 	= nameSplit[1];
 				cell_saveName.innerHTML = line.configID;
 				cell_gameName.innerHTML = name;
-				cell_age.innerHTML 		= arrayAge[nameSplit[6]];
+				cell_age.innerHTML 		= ( nameSplit[1] != "cat" ) ? arrayAge[nameSplit[6]] : arrayAge[nameSplit[5]];
 				cell_feds.innerHTML 	= line.fedCount;
+				cell_feds.innerHTML 	= cell_feds.innerHTML.padStart(2,'0');
 				cell_level.innerHTML 	= line.shouldUpgradeWhenFed;
 				if ( line.desiredItem != null )
 				{
 					cell_want.innerHTML = line.desiredItem.configID;
 				}
-				cell_posx.innerHTML 	= line.position[0];
-				cell_posy.innerHTML 	= line.position[1];
-				cell_like.innerHTML 	= arrayLike[nameSplit[4]];
-				cell_dislike.innerHTML 	= arrayDisl[nameSplit[5]];
+				cell_posx.innerHTML 	= Math.round(line.position[0]);
+				cell_posy.innerHTML 	= Math.round(line.position[1]);
+				cell_like_t.innerHTML   = ( nameSplit[1] != "cat" ) ? arrayLikeT[arrayGame.indexOf(name)] : arrayLikeC[Math.ceil( nameSplit[4]/5)];
+				cell_like.innerHTML 	= ( nameSplit[1] != "cat" ) ? arrayLike[nameSplit[4]]			  : "";
+				cell_dislike.innerHTML 	= ( nameSplit[1] != "cat" ) ? arrayDisl[nameSplit[5]]			  : arrayDislC[nameSplit[4]];
+				
+				if ( nameSplit[1] == "cat" )
+				{
+					var catLike  = "";
+					var catFirst = false;
+					
+					if ( arrayLikeCBus.indexOf(nameSplit[4]) != -1 )
+					{
+						catLike = ( catFirst ) ? catLike.concat(", ") : catLike;
+						catFirst = true;						
+						catLike = catLike.concat("bustling");						
+					}
+					if ( arrayLikeCCom.indexOf(nameSplit[4]) != -1 )
+					{
+						catLike = ( catFirst ) ? catLike.concat(", ") : catLike;
+						catFirst = true;						
+						catLike = catLike.concat("common");						
+					}
+					if ( arrayLikeCCoz.indexOf(nameSplit[4]) != -1 )
+					{
+						catLike = ( catFirst ) ? catLike.concat(", ") : catLike;
+						catFirst = true;						
+						catLike = catLike.concat("cozy");						
+					}
+					if ( arrayLikeCFun.indexOf(nameSplit[4]) != -1 )
+					{
+						catLike = ( catFirst ) ? catLike.concat(", ") : catLike;
+						catFirst = true;						
+						catLike = catLike.concat("fun");				
+					}
+					if ( arrayLikeCNat.indexOf(nameSplit[4]) != -1 )
+					{
+						catLike = ( catFirst ) ? catLike.concat(", ") : catLike;
+						catFirst = true;						
+						catLike = catLike.concat("natural");						
+					}
+					if ( arrayLikeCRus.indexOf(nameSplit[4]) != -1 )
+					{
+						catLike = ( catFirst ) ? catLike.concat(", ") : catLike;
+						catFirst = true;						
+						catLike = catLike.concat("rustic");					
+					}
+					if ( arrayLikeCSpo.indexOf(nameSplit[4]) != -1 )
+					{
+						catLike = ( catFirst ) ? catLike.concat(", ") : catLike;
+						catFirst = true;						
+						catLike = catLike.concat("spooky");				
+					}					
+				cell_like.innerHTML = catLike;					
+				}				
 			}
 		}				
 		if ( filter != true )
@@ -184,6 +266,58 @@
 			table.deleteRow(1);	
 			table.style.display = 'block';
 		}
+	}	
+	
+	function catX( pos, size )
+	{
+		var roomE = [  282,  302, gridC 	];
+		var roomB = [  140,  160, gridC 	];
+		var roomL = [ -2,    18,  0     	];
+		var roomR = [ -143, -123, 2 * gridC ];
+		
+		if ( pos >= roomE[0] )
+		{
+			var posN = ( ( pos - roomE[0] ) * gridC / 20 ) + roomE[2] - size / 3;
+		}
+		else if ( pos >= roomB[0] )
+		{
+			var posN = ( ( pos - roomB[0] ) * gridC / 20 ) + roomB[2] - size / 3;
+		}
+		else if ( pos >= roomL[0] )
+		{
+			var posN = ( ( pos - roomL[0] ) * gridC / 20 ) + roomL[2] - size / 3;
+		}
+		else if ( pos >= roomR[0] )
+		{
+			var posN = ( ( pos - roomR[0] ) * gridC / 20 ) + roomR[2] - size / 3;
+		}		
+		return posN;
+	}
+	
+	function catY( pos, size )
+	{
+		var roomE = [ -838, -858, canvas.height - gridC 	];
+		var roomB = [ -697, -717, canvas.height - 2 * gridC	];
+		var roomL = [ -555, -575, canvas.height - gridC 	];
+		var roomR = [ -414, -434, canvas.height - gridC 	];
+		
+		if ( pos <= roomE[0] )
+		{
+			var posN = roomE[2] - ( ( pos - roomE[0] ) * gridC / 20 ) - size / 2;
+		}
+		else if ( pos <= roomB[0] )
+		{
+			var posN = roomB[2] - ( ( pos - roomB[0] ) * gridC / 20 ) - size / 2;
+		}
+		else if ( pos <= roomL[0] )
+		{
+			var posN = roomL[2] - ( ( pos - roomL[0] ) * gridC / 20 ) - size / 2;
+		}
+		else if ( pos <= roomR[0] )
+		{
+			var posN = roomR[2] - ( ( pos - roomR[0] ) * gridC / 20 ) - size / 2;
+		}		
+		return posN;		
 	}
 	</script>
 </body>

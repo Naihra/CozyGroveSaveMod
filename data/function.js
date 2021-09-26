@@ -1,10 +1,12 @@
-function save( JSON, checkSave )
+function save( JSON, checkSave, slot )
 {			
 	if ( checkSave == false )
 	{
 		alert("No changes were made");
 		return;
 	}
+	
+	var fileName = ( slot == undefined || slot == 1 ) ? "cg_save.sf" : "cg_save".concat( "_", slot, ".sf" );
 	
 	var jsonStr2  = JSON.stringify(json);	
 	//Found a character that was making the encode fail
@@ -13,7 +15,8 @@ function save( JSON, checkSave )
 		
 	const element = document.createElement('a');
 	element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(outputStr));
-	element.setAttribute('download', "cg_save.sf");
+	//element.setAttribute('download', "cg_save.sf");
+	element.setAttribute('download', fileName);
 
 	element.style.display = 'none';
 	document.body.appendChild(element);
@@ -62,18 +65,20 @@ function iniPaint()
 	rutaRocks 	  = "./data/rock/"
 	offset_x 	  = 125;
 	offset_y 	  = 200;	
-	canvas.height = 1100;
+	canvas.height = 1200;
 	canvas.width  = 1100;	
+	grid 	 	  = 25;
+	gridC		  = grid * 4;
 }
 
-function clearCanvas()
+function clearCanvas( )
 {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
 function loadAndDraw(ruta, ext, name, pos_x, pos_y, size_x, size_y, color)
 {
-	color = ( color == '' || color == null ) ? "black" : color;
+	color = ( color == undefined ) ? "black" : color;
 	
 	const img_name = ruta.concat(name,".",ext);		
 	
@@ -93,8 +98,8 @@ function circleAndWrite(texto, pos_x, pos_y, color, font)
 {
 	var baseFont = "12px Courier New";
 	
-	color = ( color == '' || color == null ) ? "black" : color;
-	font  = ( font  == '' || font  == null ) ? baseFont : font.concat(" ", baseFont);
+	color = ( color == undefined ) ? "black"  : color;
+	font  = ( font  == undefined ) ? baseFont : font.concat(" ", baseFont);
 	
 	ctx.beginPath();
 	ctx.arc(pos_x, pos_y, 6, 0, 2 * Math.PI);
@@ -166,10 +171,8 @@ function paintBase( fences )
 	}		
 }	
 	
-function paintGrid()
+function paintGrid( )
 {
-	const grid = 25;
-		
 	var max_x = ( canvas.clientWidth / 4 ) - offset_x;
 	var max_y = offset_y - ( canvas.clientHeight / 4 );
 	
@@ -186,7 +189,7 @@ function paintGrid()
 		ctx.strokeStyle = "lightgray";
 		ctx.stroke();
 		
-		ctx.font 	  = "12px Courier New";
+		ctx.font 	 = "12px Courier New";
 		ctx.fillStyle = 'black';
 		ctx.textAlign = 'start';
 		ctx.fillText(v_p, posx, 10); 
@@ -209,3 +212,22 @@ function paintGrid()
 	ctx.textAlign = 'start';
 }
 	
+function paintGridHouse()
+{	
+	drawLine( 0,   		 canvas.height,			    3 * gridC, canvas.height );
+	drawLine( 0,   		 canvas.height - 1 * gridC, 3 * gridC, canvas.height - 1 * gridC );
+	drawLine( 1 * gridC, canvas.height - 2 * gridC, 2 * gridC, canvas.height - 2 * gridC );
+	drawLine( 0,   		 canvas.height,			    0,   	   canvas.height - 1 * gridC );
+	drawLine( 1 * gridC, canvas.height,			    1 * gridC, canvas.height - 2 * gridC );
+	drawLine( 2 * gridC, canvas.height,			    2 * gridC, canvas.height - 2 * gridC );
+	drawLine( 3 * gridC, canvas.height,			    3 * gridC, canvas.height - 1 * gridC );	
+}
+
+function drawLine( start_x, start_y, end_x, end_y )
+{	
+	ctx.beginPath();
+	ctx.moveTo( start_x, start_y );
+	ctx.lineTo( end_x, end_y );
+	ctx.strokeStyle = "black";
+	ctx.stroke();		
+}

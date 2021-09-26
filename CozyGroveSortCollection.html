@@ -87,8 +87,10 @@
 		arrayRarity = [ "common", "uncommon", "rare", "legendary", "unique" ];
 		arraySeason = [ "earlyspring", "spring", "latespring", "earlysummer", "summer", "latesummer", "earlyfall", "fall", "latefall", "earlywinter", "winter", "latewinter" ];
 		arrayLetter = [ "A","B","C","D","E","F","G","H","I","J","K","L" ];
-		arrayMatNum = [ "gem", "ore", "ingot", "memory", "relic", "bone", "flower" ];
+		//arrayMatNum = [ "gem", "ore", "ingot", "memory", "camera", "relic", "bone", "flower" ];
+		arrayMatNum = [ "gem", "memory", "relic", "bone", "flower", "camera", "natural", "ore", "ingot" ];
 		arrayOreNum = [ "iron", "silver", "gold" ];
+		arrayFood   = [ "bird", "deer", "imp", "rodent" ];
 		
 		if ( document.getElementById("orderFishs").checked || checkAll )
 		{
@@ -254,7 +256,7 @@
 			}			
 			
 			//For foods
-			if ( sort.substring(0,3) == "afo" && ( nameSplit[2] == "bird" || nameSplit[2] == "deer" || nameSplit[2] == "imp" ) )
+			if ( sort.substring(0,3) == "afo" && arrayFood.indexOf(nameSplit[2]) != -1 )
 			{
 				nameSplit.splice(1, 2, nameSplit[2], nameSplit[1] );
 			}
