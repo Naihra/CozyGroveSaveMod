@@ -1,5 +1,6 @@
 # Game version
-Current apps will only work with game version 2.3.0. or higher.
+#### 26/09/21
+Apps have been updated to include features from 3.0.0, but they will still work with 2.3.0 save files. Please redownload the data folder as well, since required files inside have been modified too.
 
 For older game versions use the released files, https://github.com/Naihra/CozyGroveSaveMod/releases/tag/2.2.0
 
@@ -29,7 +30,11 @@ The table can be sorted by clicking on the header, and the animals that show on 
 ### Finder
 Locates any item that's on the ground, can use any of the preset selection or input a string in "Custom search", then press Enter or the button.
 
-![image](https://user-images.githubusercontent.com/84879535/124158348-15c54280-da9a-11eb-9e40-0f170b93d8bf.png)
+![image](https://user-images.githubusercontent.com/84879535/134813855-9220861c-2d10-47bd-ab16-a1a3a04b72ce.png)
+
+In the "Presets" option any of the options can be selected, including all of them at once.
+
+![image](https://user-images.githubusercontent.com/84879535/134813870-b84fe64e-44e1-472e-93cc-f2da844e435f.png)
 
 Shells and critters not in collection will show highlighted.
 
@@ -39,9 +44,9 @@ These apps create a new save file from the information of the one you load. My r
 Name of the slots are "cg_save.sf" "cg_save_2.sf" "cg_save_3.sf".
 
 ### Recycler
-Takes imp essence and greens from your inventory only, not from storage. 
+Takes imp essence, greens and ingots from your inventory only, not from storage. 
 
-In the current version you get 3 lower rank essences for each one you recycle and 2 greens.
+In the current version you get 3 lower rank essences for each one you recycle and 2 for greens and ingots.
 
 They max at 50, if it were to generate more than that the excess will be lost, but different stacks are treated separatedly.
 
