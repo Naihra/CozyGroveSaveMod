@@ -1,6 +1,6 @@
 # Game version
 #### 26/09/21
-Apps have been updated to include features from 3.0.0, but they will still work with 2.3.0 save files. Please redownload the data folder as well, since required files inside have been modified too.
+Apps have been updated to version 3.0.0 but they will still work with 2.3.0 save files. Please redownload the data folder as well, since required files inside have been modified too.
 
 For older game versions use the released files, https://github.com/Naihra/CozyGroveSaveMod/releases/tag/2.2.0
 
