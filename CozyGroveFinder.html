@@ -295,8 +295,14 @@
 			var pos_x = 4 * (line.position[0] + offset_x);
 			var pos_y = 4 * (offset_y - line.position[1]);			
 			
-			var font = checkCollection( line.configID, "critters" );			
-			circleAndWrite(line.configID, pos_x, pos_y, "darkred", font);		
+			var font = checkCollection( line.configID, "critters" );		
+			var fontColor = "darkred";
+			if ( line.configID.includes("halloween") )
+			{
+				var fontColor = "orangered";
+			}
+			
+			circleAndWrite(line.configID, pos_x, pos_y, fontColor, font);		
 		}
 	}
 	
