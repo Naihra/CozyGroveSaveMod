@@ -117,6 +117,7 @@
 					
 			case "findFora":
 			findForage();
+			findImps();
 			break;
 			
 			case "findCrit":
@@ -271,14 +272,25 @@
 			var pos_x = 4 * (line.position[0] + offset_x) - (size / 2);
 			var pos_y = 4 * (offset_y - line.position[1]) - (size / 2);
 			
-			if ( line.prefabName.substring(0,4) == "Imps" && document.getElementById("chkImp").checked )
+			var checkImp = false;			
+			if ( document.getElementById("chkImp").checked || document.getElementById("findItem").options[document.getElementById("findItem").selectedIndex].value == "findImp" ) 
+			{
+				checkImp = true;
+			}
+			var checkFora = false;
+			if ( document.getElementById("chkFora").checked || document.getElementById("findItem").options[document.getElementById("findItem").selectedIndex].value == "findFora" ) 
+			{
+				checkFora = true;
+			}
+			
+			if ( line.prefabName.substring(0,4) == "Imps" && checkImp ) 
 			{	
 				var nameSplit = line.prefabName.split("_");
 				var imgName = nameSplit[0].concat(nameSplit[1]);
 				loadAndDraw(rutaImp, "png", imgName, pos_x, pos_y, size, size);			
 			}
 			//Skipping shells are in the Imps table, but I consider them "Forage"
-			if ( line.prefabName.substring(0,4) != "Imps" && document.getElementById("chkFora").checked )
+			if ( line.prefabName.substring(0,4) != "Imps" && checkFora )
 			{					
 				var imgName = line.data.configID;				
 				loadAndDraw(rutaForage, "png", imgName, pos_x, pos_y, size, size);	
