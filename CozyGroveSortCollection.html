@@ -84,7 +84,7 @@
 		var checkSave = false;
 		var checkAll = document.getElementById("orderAll").checked;
 		
-		arrayRarity = [ "common", "uncommon", "rare", "legendary", "unique" ];
+		arrayRarity = [ "common", "uncommon", "rare", "legendary", "unique", "halloween" ];
 		arraySeason = [ "earlyspring", "spring", "latespring", "earlysummer", "summer", "latesummer", "earlyfall", "fall", "latefall", "earlywinter", "winter", "latewinter" ];
 		arrayLetter = [ "A","B","C","D","E","F","G","H","I","J","K","L" ];
 		//arrayMatNum = [ "gem", "ore", "ingot", "memory", "camera", "relic", "bone", "flower" ];
@@ -165,7 +165,8 @@
 					var checkRarity = arrayRarity.indexOf(nameSplit[2]);
 					if ( checkRarity == -1 )
 					{
-						nameSplit.shift();
+						nameSplit.push(nameSplit.shift());
+						//nameSplit.shift();
 					}					
 				}
 				while ( checkRarity == -1 );
@@ -193,9 +194,15 @@
 			}
 			
 			//Check for early/late seasons, same for all
-			if ( nameSplit.length == 6 )
+			//Modify so that shells can keep the "nochange/backfill" after the season - It's to keep the 2 duplicates. REMOVE IF FIXED
+			//if ( nameSplit.length == 6 )
+			if ( nameSplit[4] == "early" || nameSplit[4] == "late" )
 			{
 				nameSplit[4] += nameSplit[5];
+				if ( nameSplit.length == 7 )
+				{
+					nameSplit[5] = nameSplit[6];
+				}
 				nameSplit.pop();
 			}
 			nameSplit[4] = arrayLetter[arraySeason.indexOf(nameSplit[4])];
