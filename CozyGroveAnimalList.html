@@ -144,7 +144,7 @@
 			var name = arrayGame[arraySave.indexOf(nameSplit[2].concat(nameSplit[3]))];
 			
 			//First cat found -> paint darker lines for the inside of the house
-			if ( catFound == false && nameSplit[1] == "cat" )
+			if ( catFound == false && line.configID.includes("_cat_") )
 			{
 				catFound = true;				
 				paintGridHouse();				
@@ -152,24 +152,31 @@
 			
 			//Check the map filter
 			var checkHungry = ( mapHungry == "all" || ( mapHungry == "X" && line.desiredItem != null ) ) ? true : false;
-			var checkAge 	= ( mapAge == "all"    || mapAge  == nameSplit[6] ) 						 ? true : false;
-			var checkType 	= ( mapType == "all"   || mapType == nameSplit[1] ) 						 ? true : false;
+			var checkAge 	= ( mapAge == "all"    || mapAge  == nameSplit[nameSplit.length-1] ) 		 ? true : false;
+			var checkType 	= ( mapType == "all"   || line.configID.includes("_".concat(mapType,"_")) )  ? true : false;
 			
 			if ( checkHungry && checkAge && checkType )
 			{			
-				if ( nameSplit[1] != "cat" )
+				var imgName = nameSplit[1].concat("_", name );
+				
+				if ( line.configID.includes("_cat_") )
+				{
+					var size = 50;
+					var pos_x = catX( line.position[0], size );
+					var pos_y = catY( line.position[1], size );				
+					
+					if ( nameSplit[2] == "cat")
+					{
+						imgName = nameSplit[2].concat("_", nameSplit[1] );
+					}
+				}	
+				else
 				{		
 					var size = 40;
 					var pos_x = 4 * (line.position[0] + offset_x) - (size / 3);
 					var pos_y = 4 * (offset_y - line.position[1]) - (size / 2);							
-				}
-				else
-				{
-					var size = 50;
-					var pos_x = catX( line.position[0], size );
-					var pos_y = catY( line.position[1], size );					
-				}
-				var imgName = nameSplit[1].concat("_", name );					
+				}							
+									
 				loadAndDraw(rutaAnimal, "png", imgName, pos_x, pos_y, size / 1.5, size);
 			}
 				
@@ -196,7 +203,8 @@
 				cell_type.innerHTML 	= nameSplit[1];
 				cell_saveName.innerHTML = line.configID;
 				cell_gameName.innerHTML = name;
-				cell_age.innerHTML 		= ( nameSplit[1] != "cat" ) ? arrayAge[nameSplit[6]] : arrayAge[nameSplit[5]];
+				//cell_age.innerHTML 		= ( nameSplit[1] != "cat" ) ? arrayAge[nameSplit[6]] : arrayAge[nameSplit[5]];
+				cell_age.innerHTML 		= arrayAge[nameSplit[nameSplit.length-1]];
 				cell_feds.innerHTML 	= line.fedCount;
 				cell_feds.innerHTML 	= cell_feds.innerHTML.padStart(2,'0');
 				cell_level.innerHTML 	= line.shouldUpgradeWhenFed;
@@ -210,7 +218,7 @@
 				cell_like.innerHTML 	= ( nameSplit[1] != "cat" ) ? arrayLike[nameSplit[4]]			  : "";
 				cell_dislike.innerHTML 	= ( nameSplit[1] != "cat" ) ? arrayDisl[nameSplit[5]]			  : arrayDislC[nameSplit[4]];
 				
-				if ( nameSplit[1] == "cat" )
+				if ( line.configID.includes("_cat_") )
 				{
 					var catLike  = "";
 					var catFirst = false;
@@ -257,8 +265,18 @@
 						catFirst = true;						
 						catLike = catLike.concat("spooky");				
 					}					
-				cell_like.innerHTML = catLike;					
-				}				
+					cell_like.innerHTML = catLike;					
+				
+					//Halloween cat works separated
+					if ( nameSplit[1] == "halloween" )
+					{
+						cell_gameName.innerHTML = nameSplit[1];
+						cell_type.innerHTML     = nameSplit[2];
+						cell_like_t.innerHTML   = "";
+						cell_like.innerHTML     = "spooky";
+						cell_dislike.innerHTML  = "rustic";
+					}
+				}					
 			}
 		}				
 		if ( filter != true )

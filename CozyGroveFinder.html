@@ -434,14 +434,9 @@
 			var name = arrayGame[arraySave.indexOf(nameSplit[2].concat(nameSplit[3]))];
 			
 			if ( line.desiredItem != null )
-			{								
-				if ( nameSplit[1] != "cat" )
-				{		
-					var size = 40;
-					var pos_x = 4 * (line.position[0] + offset_x) - (size / 3);
-					var pos_y = 4 * (offset_y - line.position[1]) - (size / 2);							
-				}
-				else
+			{				
+				var imgName = nameSplit[1].concat("_", name );
+				if ( line.configID.includes("_cat_") )
 				{
 					//First cat found -> paint darker lines for the inside of the house
 					if ( catFound == false )
@@ -452,9 +447,18 @@
 				
 					var size = 50;
 					var pos_x = catX( line.position[0], size );
-					var pos_y = catY( line.position[1], size );					
+					var pos_y = catY( line.position[1], size );	
+					if ( nameSplit[2] == "cat")
+					{
+						imgName = nameSplit[2].concat("_", nameSplit[1] );
+					}
 				}
-				var imgName = nameSplit[1].concat("_", name );					
+				else
+				{		
+					var size = 40;
+					var pos_x = 4 * (line.position[0] + offset_x) - (size / 3);
+					var pos_y = 4 * (offset_y - line.position[1]) - (size / 2);							
+				}											
 				loadAndDraw(rutaAnimal, "png", imgName, pos_x, pos_y, size / 1.5, size);
 			}
 		}		
