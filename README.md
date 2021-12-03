@@ -1,8 +1,8 @@
 # Game version
-#### 26/09/21
-Apps have been updated to version 3.0.0 but they will still work with 2.3.0 save files. Please redownload the data folder as well, since required files inside have been modified too.
+#### 03/12/21 
+Apps have been updated to cover features of version 4.0.0 and the winter festival but they should still work with 3.2.0 save files. In case it doesn't work use the release 3.2.0 version.
 
-For older game versions use the released files, https://github.com/Naihra/CozyGroveSaveMod/releases/tag/2.2.0
+Please redownload the data folder as well, since required files inside have been modified too. Be aware that the files inside this folder can spoil some of the new content.
 
 # Save location
 Steam and MAC: https://support.spryfox.com/hc/en-us/articles/1500003981321-Where-can-I-find-my-Cozy-Grove-logs-and-save-files-
