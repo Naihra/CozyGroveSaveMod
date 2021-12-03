@@ -86,10 +86,11 @@
 		
 		arrayRarity = [ "common", "uncommon", "rare", "legendary", "unique", "halloween" ];
 		arraySeason = [ "earlyspring", "spring", "latespring", "earlysummer", "summer", "latesummer", "earlyfall", "fall", "latefall", "earlywinter", "winter", "latewinter" ];
-		arrayLetter = [ "A","B","C","D","E","F","G","H","I","J","K","L" ];
+		arrayLetter = [ "A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z" ];
 		//arrayMatNum = [ "gem", "ore", "ingot", "memory", "camera", "relic", "bone", "flower" ];
-		arrayMatNum = [ "gem", "memory", "relic", "bone", "flower", "camera", "natural", "ore", "ingot" ];
-		arrayOreNum = [ "iron", "silver", "gold" ];
+		//arrayMatNum = [ "gem", "memory", "relic", "bone", "flower", "camera", "natural", "ore", "ingot" ];
+		arrayMatNum = [ "gem", "memory", "relic", "skipping", "natural", "amber", "ore", "ingot", "gear", "snow", "dew", "camera", "bone", "flower" ];
+		arrayOrder	= [ "iron", "silver", "gold", "basic", "pro", "master", "simple", "ornate" ];
 		arrayFood   = [ "bird", "deer", "imp", "rodent" ];
 		
 		if ( document.getElementById("orderFishs").checked || checkAll )
@@ -271,9 +272,19 @@
 			//For materials
 			if ( sort.substring(0,3) == "ama" )
 			{
-				if ( nameSplit[0] == "ore" || nameSplit[0] == "ingot" )
+				if ( nameSplit[1] == "gear" )
 				{
-					nameSplit[1] = arrayOreNum.indexOf(nameSplit[1]);
+					nameSplit.unshift(nameSplit[1]);
+				}
+				
+				if ( nameSplit[0] == "skipping" )
+				{
+					nameSplit[1] = nameSplit[2];
+				}
+				
+				if ( nameSplit[0] == "ore" || nameSplit[0] == "ingot" || nameSplit[0] == "skipping" || nameSplit[0] == "gear" )
+				{
+					nameSplit[1] = arrayOrder.indexOf(nameSplit[1]);
 				}
 				
 				if ( nameSplit[0] == "relic" )
@@ -282,17 +293,23 @@
 					
 					if ( nameSplit[1] == "ash" )
 					{
-						nameSplit[1] = "z";
+						nameSplit[1] = "zzz";
 					}
 				}
+				
+				if ( nameSplit[0] == "amber" && nameSplit[1] == "plain" )
+				{
+					nameSplit[1] = "aaa";
+				}				
 			
 				if ( arrayMatNum.indexOf(nameSplit[0]) != -1 )
 				{
-					nameSplit[0] = arrayMatNum.indexOf(nameSplit[0]);
+					nameSplit.unshift(arrayLetter[arrayMatNum.indexOf(nameSplit[0])]);
+					//nameSplit[0] = arrayMatNum.indexOf(nameSplit[0]);
 				} 
 				else
 				{
-					nameSplit.unshift(arrayMatNum.length);
+					nameSplit.unshift(arrayLetter[arrayMatNum.length]);
 				}
 			}
 			

@@ -217,9 +217,10 @@ function paintGridHouse()
 	drawLine( 0,   		 canvas.height,			    3 * gridC, canvas.height );
 	drawLine( 0,   		 canvas.height - 1 * gridC, 3 * gridC, canvas.height - 1 * gridC );
 	drawLine( 1 * gridC, canvas.height - 2 * gridC, 2 * gridC, canvas.height - 2 * gridC );
+	drawLine( 1 * gridC, canvas.height - 3 * gridC, 2 * gridC, canvas.height - 3 * gridC );
 	drawLine( 0,   		 canvas.height,			    0,   	   canvas.height - 1 * gridC );
-	drawLine( 1 * gridC, canvas.height,			    1 * gridC, canvas.height - 2 * gridC );
-	drawLine( 2 * gridC, canvas.height,			    2 * gridC, canvas.height - 2 * gridC );
+	drawLine( 1 * gridC, canvas.height,			    1 * gridC, canvas.height - 3 * gridC );
+	drawLine( 2 * gridC, canvas.height,			    2 * gridC, canvas.height - 3 * gridC );
 	drawLine( 3 * gridC, canvas.height,			    3 * gridC, canvas.height - 1 * gridC );	
 }
 

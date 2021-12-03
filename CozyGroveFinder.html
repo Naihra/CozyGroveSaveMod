@@ -289,12 +289,17 @@
 				var imgName = nameSplit[0].concat(nameSplit[1]);
 				loadAndDraw(rutaImp, "png", imgName, pos_x, pos_y, size, size);			
 			}
+			else if ( line.prefabName == "CompleteThePatternBase" && checkImp )
+			{
+				loadAndDraw(rutaImp, "png", line.prefabName, pos_x, pos_y, size, size);
+			}
 			//Skipping shells are in the Imps table, but I consider them "Forage"
-			if ( line.prefabName.substring(0,4) != "Imps" && checkFora )
+			else if ( line.prefabName.substring(0,5) == "Stone" && checkFora )
 			{					
 				var imgName = line.data.configID;				
 				loadAndDraw(rutaForage, "png", imgName, pos_x, pos_y, size, size);	
 			}
+			
 		}		
 	}
 		
@@ -398,6 +403,7 @@
 		findCustom( "leafpile", "darkgreen", "3_4" );
 		findCustom( "shell", "blue" );
 		findCustom( "spirit_well" );
+		findCustom( "snow_pile_", "gray", "0_2" );
 		//findSkip(); //Included in findImps function
 	}
 	
@@ -466,54 +472,40 @@
 	
 	function catX( pos, size )
 	{
-		var roomE = [  282,  302, gridC 	];
-		var roomB = [  140,  160, gridC 	];
-		var roomL = [ -2,    18,  0     	];
-		var roomR = [ -143, -123, 2 * gridC ];
-		
-		if ( pos >= roomE[0] )
+		var room = [ [  282,  302, gridC 	 ],  	//Entrance
+					 [  140,  160, gridC 	 ],  	//Back
+					 [ -2,    18,  0     	 ],  	//Left
+					 [ -143, -123, 2 * gridC ],  	//Right
+					 [ -285, -265, gridC	 ] ]; 	//Second back
+					 
+		for ( var i = 0; i < 5; i++ )
 		{
-			var posN = ( ( pos - roomE[0] ) * gridC / 20 ) + roomE[2] - size / 3;
+			if ( pos >= room[i][0] )
+			{
+				var posN = ( ( pos - room[i][0] ) * gridC / 20 ) + room[i][2] - size / 3;
+				break;
+			}
 		}
-		else if ( pos >= roomB[0] )
-		{
-			var posN = ( ( pos - roomB[0] ) * gridC / 20 ) + roomB[2] - size / 3;
-		}
-		else if ( pos >= roomL[0] )
-		{
-			var posN = ( ( pos - roomL[0] ) * gridC / 20 ) + roomL[2] - size / 3;
-		}
-		else if ( pos >= roomR[0] )
-		{
-			var posN = ( ( pos - roomR[0] ) * gridC / 20 ) + roomR[2] - size / 3;
-		}		
 		return posN;
 	}
 	
 	function catY( pos, size )
 	{
-		var roomE = [ -838, -858, canvas.height - gridC 	];
-		var roomB = [ -697, -717, canvas.height - 2 * gridC	];
-		var roomL = [ -555, -575, canvas.height - gridC 	];
-		var roomR = [ -414, -434, canvas.height - gridC 	];
-		
-		if ( pos <= roomE[0] )
+		var room = [ [ -838, -858, canvas.height - gridC 	 ],		//Entrance
+					 [ -697, -717, canvas.height - 2 * gridC ],     //Back
+					 [ -555, -575, canvas.height - gridC 	 ],     //Left
+					 [ -414, -434, canvas.height - gridC 	 ],     //Right
+					 [ -273, -293, canvas.height - 3 * gridC ] ];   //Second back
+					 
+		for ( var i = 0; i < 5; i++ )
 		{
-			var posN = roomE[2] - ( ( pos - roomE[0] ) * gridC / 20 ) - size / 2;
-		}
-		else if ( pos <= roomB[0] )
-		{
-			var posN = roomB[2] - ( ( pos - roomB[0] ) * gridC / 20 ) - size / 2;
-		}
-		else if ( pos <= roomL[0] )
-		{
-			var posN = roomL[2] - ( ( pos - roomL[0] ) * gridC / 20 ) - size / 2;
-		}
-		else if ( pos <= roomR[0] )
-		{
-			var posN = roomR[2] - ( ( pos - roomR[0] ) * gridC / 20 ) - size / 2;
+			if ( pos <= room[i][0] )
+			{
+				var posN = room[i][2] - ( ( pos - room[i][0] ) * gridC / 20 ) - size / 2;
+				break;
+			}
 		}		
-		return posN;		
+		return posN;
 	}
 	
 	function checkCollection( item, cat )
