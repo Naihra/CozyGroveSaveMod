@@ -59,6 +59,20 @@ Reads the furniture items from inventory (not storage) and present a list so the
 
 Having more than one item in the slot will cause all of them to disappeared and be replaced with the recipe.
 
+### Planter
+#### ONLY FULLY COMPATIBLE WITH GAME VERSION 4.1.0 AND ABOVE
+Turns flowers blossom into a potted flower or bush.
+
+It will read the blossoms from inventory (not storage) and present a list. This list will indicate if that particular flower is planted on the island or if it has already been donated.
+
+The "Mark new" button will mark all the blossoms that have one of those two columns empty. Any other line can be marked and unmarked by clicking on the line.
+
+![image](https://user-images.githubusercontent.com/84879535/145677105-e7a6962d-585f-4c4c-943b-6dd5185f9278.png)
+
+The pot color and bush variation (pot/size) can't be chosen because not all flowers exists in all varieties, so it will be picked at random from a selection that guarantees a valid combination.
+
+Before game version 4.1.0 some of the flowers/bushes didn't exist, so the app would return a softwood instead.
+
 ### Sort Collection
 Sorts the items in collection.
 
