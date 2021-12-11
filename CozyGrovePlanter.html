@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Cosy Grove Planter</title>
+	<style type="text/css">
+		a,label,input {		
+		font-family: 'Courier New', monospace;		
+		margin: 5px;
+		}
+		
+		table, th, td {
+		border:1px solid #c3c3c3;
+		}
+}
+	</style>
+	<script src="./data/function.js"></script>
+</head>
+
+<body>
+
+	<h1>Cozy Grove Planter</h1>	
+	
+	<label for="uploadSourceFile">Select your save</label><br>
+	<input id="uploadSourceFile" type="file" accept=".sf">
+	<br><br>
+
+<div class="table">
+	<table id="recycleTable" style="display:none">
+	<thead>
+		<tr>
+			<th>Plant</th>
+			<th>Pos</th>
+			<th>Item</th>
+			<th>Donated</th>
+			<th>Planted</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+		</tr>
+	</tbody>
+	</table>
+	</div>
+	
+	<input id="bt_recycle" type="button" value="Plant" onclick="recycle();" disabled ="true">
+	<input id="bt_mark_nd" type="button" value="Mark new" onclick="markNew();" disabled ="true">
+	<br><br>
+
+	<script>
+	
+	document.getElementById("uploadSourceFile").addEventListener("change", loadSource, false);
+	table = document.getElementById("recycleTable");	
+	table.addEventListener("click", markRecycle,false);
+	
+	function start( result )
+	{
+		if ( result )
+		{				
+			readGround();
+			readInventory();
+		}
+	}
+	
+	function readInventory()
+	{			
+		var contador = 1;	
+		for (var key in json.Player.Inventory.SlotDisplayOrder)
+		{
+			var line = json.Player.Inventory.SlotDisplayOrder[key];			
+			if (line != null )
+			{			
+				var nameSplit = line.item.configID.split("_");
+				
+				if ( nameSplit[0] == "flower" && ( nameSplit[1] == "ground" || ( nameSplit[1] == "bush" && ( nameSplit[3] == "a" || nameSplit[3] == "b" || nameSplit[3] == "c" ) ) ) )
+				{
+					contador += 1;				
+					var row 	  = table.insertRow(contador);				
+					var cellCheck = row.insertCell(0);
+					var cellId    = row.insertCell(1);
+					var cellName  = row.insertCell(2);
+					var cellDonat = row.insertCell(3);
+					var cellPlant = row.insertCell(4);
+					
+					for ( var collItem in json.PlayerCollections.itemGroups.flowers.donatedItemConfigIdMap )
+					{
+						if ( collItem == line.item.configID )
+						{
+							cellDonat.innerHTML = "X";
+							break;
+						}
+					}				
+					cellPlant.innerHTML = ( groundPlant.indexOf(collItem) != -1 ) ? "X" : "";
+					cellId.innerHTML     = key;
+					cellName.innerHTML   = line.item.configID;
+				}
+			}				
+		}		
+		
+		if ( table.tBodies[0].rows.length > 1 )
+		{		
+			table.deleteRow(1);	
+			table.style.display = 'block';		
+			document.getElementById("bt_recycle").disabled = false;
+			document.getElementById("bt_mark_nd").disabled = false;
+		}
+		else
+		{
+			table.style.display = 'none';		
+			document.getElementById("bt_recycle").disabled = true;
+			document.getElementById("bt_mark_nd").disabled = true;
+			alert("No valid item found");
+		}
+	}	
+
+	function recycle() {		
+	
+		var arrayRarity  = [ "a", "b", "c" ];
+		var arrayPot  	 = [ "a", "b", "c", "d", "e" ];
+		var arraySize 	 = [ "varA_small", "varA_medium", "varA_large", "varB_small", "varB_medium", "varB_large" ];
+		var arraySizeNew = [ "varA_small", "varA_med", "varA_large", "varB_small", "varB_med", "varB_large" ];
+	
+		var checkSave  = false;			
+	
+		for (var key in table.tBodies[0].rows)
+		{
+			if ( key == "length") break;
+			
+			var line = table.tBodies[0].rows[key].cells;
+			if ( line[0].innerHTML == "X" )
+			{				
+				var checkFound = false;
+				var contador   = 0;
+				
+				var nameSplit = line[2].innerHTML.split("_");
+				if ( nameSplit[1] == "ground" )
+				{
+					//Potted flowers are simple, change "ground" for "potted_[pot variant]"
+					shuffle(arrayPot);
+					
+					while ( checkFound == false && contador < arrayPot.length )
+					{
+						//Look if the flower pot exists in the list
+						nameSplit[1] = "potted".concat("_", arrayPot[contador]);					
+						var name = nameSplit.join("_");
+						checkFound = ( collFlower.indexOf( name ) != -1 ) ? true : false;
+						if ( checkFound ) { break; }
+						
+						//Repeat the search in the new list, version 4.1.0 and up						
+						name = "bf_".concat(name);
+						checkFound = ( collFlowerNew.indexOf( name ) != -1 ) ? true : false;
+						if ( checkFound ) { break; }
+						
+						contador++;
+					}										
+				}
+				
+				if ( nameSplit[1] == "bush" )
+				{
+					//Bushes are a (bit) LOT more complex
+					var rarityA   = nameSplit.splice(3,1);
+					var rarity    = "pat".concat(1 + arrayRarity.indexOf(rarityA[0]));
+					var rarityNew = 1 + arrayRarity.indexOf(rarityA[0]);
+					//First try with noPot, if not found try with pot
+					shuffle(arraySize);
+					
+					while ( checkFound == false && contador < arraySize.length )
+					{
+						//Look if the bush exists in the list with/without pot
+						name = nameSplit.join("_").concat("_noPot", "_", rarity, "_", arraySize[contador]);			
+						checkFound = ( collBush.indexOf( name ) != -1 ) ? true : false;
+						if ( checkFound ) { break; }
+						
+						name = nameSplit.join("_").concat("_pot", "_", rarity, "_", arraySize[contador]);	
+						checkFound = ( collBush.indexOf( name ) != -1 ) ? true : false;
+						if ( checkFound ) { break; }
+						
+						//Repeat the search in the new list, version 4.1.0 and up							
+						name = "bf_".concat( nameSplit.join("_").concat("_noPot", "_", rarityNew, "_", arraySizeNew[contador]) );
+						checkFound = ( collBushNew.indexOf( name ) != -1 ) ? true : false;
+						if ( checkFound ) { break; }
+						
+						name = "bf_".concat( nameSplit.join("_").concat("_pot", "_", rarityNew, "_", arraySizeNew[contador]) );
+						checkFound = ( collBushNew.indexOf( name ) != -1 ) ? true : false;
+						if ( checkFound ) { break; }
+						
+						contador++;
+					}							
+				}				
+				
+				if ( checkFound )
+				{
+					checkSave = true;
+					json.Player.Inventory.SlotDisplayOrder[line[1].innerHTML].item.configID = name;
+					json.Player.Inventory.SlotDisplayOrder[line[1].innerHTML].amount = 1;
+				}
+				else
+				{
+					line[0].innerHTML = "N/A";
+				}
+			}								
+		}
+		
+		if ( checkSave )
+		{
+			document.getElementById("bt_recycle").disabled = true;					
+			document.getElementById("bt_mark_nd").disabled = true;					
+			save( JSON, checkSave );			
+		}				
+	}
+	
+	function readGround()
+	{
+		var arrayRarity  = [ "a", "b", "c" ];
+		//Fill the lists with all the flowers and bushes already placed on the ground
+		for( var key in json.ItemsOnGroundData.OnGround )
+		{			
+			var line = json.ItemsOnGroundData.OnGround[key];	
+			var nameSplit  = line.item.configID.split("_");
+			
+			if ( nameSplit[0] == "bf" )
+			{
+				nameSplit.shift();
+			}						
+			if ( nameSplit[0] == "flower" && nameSplit[1] == "potted" )
+			{
+				nameSplit[1] = "ground";
+				nameSplit.splice(2, 1);				
+				groundPlant.push( nameSplit.join("_"));
+			}
+			if ( nameSplit[0] == "flower" && nameSplit[1] == "bush" )
+			{
+				var removed = nameSplit.splice(-4, 4);
+				var rarity  = arrayRarity[-1+parseInt( removed[1].charAt(removed[1].length-1) )];
+				nameSplit.splice(3, 0, rarity );
+				groundPlant.push( nameSplit.join("_"));
+			}				
+		}
+	}
+
+	function markRecycle(e)
+	{
+		var element = e.srcElement || e.target;
+		if(element.nodeName != 'TD') return;		
+		while(element.nodeName != 'TR') element = element.parentNode;
+		
+		var value = table.rows[element.rowIndex].cells[0].innerHTML;		
+		table.rows[element.rowIndex].cells[0].innerHTML = ( value == "X" ) ? "" : "X";
+	}	
+	
+	function markNew()
+	{
+		for (var key in table.tBodies[0].rows)
+		{
+			if ( key == "length") break;
+			var line = table.tBodies[0].rows[key].cells;
+			line[0].innerHTML = ( line[3].innerHTML == "" || line[4].innerHTML == "" ) ? "X" : "";
+		}
+	}
+	
+	function shuffle(array)
+	{
+		var currentIndex = array.length,  randomIndex;	
+		// While there remain elements to shuffle...
+		while (0 !== currentIndex)
+		{
+			// Pick a remaining element...
+			randomIndex = Math.floor(Math.random() * currentIndex);
+			currentIndex--;		
+			// And swap it with the current element.
+			[array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+		}
+		return array;
+	}
+	
+	groundPlant = [];
+	collFlower = [
+"flower_potted_c_coneflower_b_early_spring",
+"flower_potted_b_coneflower_c_early_spring",
+"flower_potted_d_coneflower_c_early_spring",
+"flower_potted_e_coneflower_c_early_spring",
+"flower_potted_b_coneflower_a_spring",
+"flower_potted_d_coneflower_a_spring",
+"flower_potted_b_coneflower_b_spring",
+"flower_potted_a_coneflower_c_spring",
+"flower_potted_c_coneflower_c_spring",
+"flower_potted_b_coneflower_a_late_spring",
+"flower_potted_d_coneflower_b_late_spring",
+"flower_potted_c_coneflower_c_late_spring",
+"flower_potted_d_coneflower_c_early_summer",
+"flower_potted_e_coneflower_b_summer",
+"flower_potted_a_coneflower_c_summer",
+"flower_potted_c_coneflower_b_late_summer",
+"flower_potted_a_coneflower_c_late_summer",
+"flower_potted_d_coneflower_c_late_summer",
+"flower_potted_d_coneflower_b_early_fall",
+"flower_potted_b_coneflower_a_fall",
+"flower_potted_a_coneflower_a_late_fall",
+"flower_potted_b_coneflower_a_late_fall",
+"flower_potted_c_coneflower_a_late_fall",
+"flower_potted_e_coneflower_a_late_fall",
+"flower_potted_c_coneflower_c_late_fall",
+"flower_potted_e_coneflower_c_late_fall",
+"flower_potted_a_coneflower_c_early_winter",
+"flower_potted_d_coneflower_a_winter",
+"flower_potted_d_coneflower_b_winter",
+"flower_potted_e_coneflower_c_winter",
+"flower_potted_a_coneflower_a_late_winter",
+"flower_potted_c_coneflower_a_late_winter",
+"flower_potted_b_coneflower_c_late_winter",
+"flower_potted_e_coneflower_c_late_winter",
+"flower_potted_a_dahlia_a_early_spring",
+"flower_potted_c_dahlia_a_early_spring",
+"flower_potted_d_dahlia_a_early_spring",
+"flower_potted_b_dahlia_b_early_spring",
+"flower_potted_e_dahlia_b_early_spring",
+"flower_potted_c_dahlia_c_early_spring",
+"flower_potted_d_dahlia_a_spring",
+"flower_potted_e_dahlia_a_spring",
+"flower_potted_b_dahlia_b_spring",
+"flower_potted_d_dahlia_b_spring",
+"flower_potted_a_dahlia_a_late_spring",
+"flower_potted_e_dahlia_a_late_spring",
+"flower_potted_b_dahlia_b_late_spring",
+"flower_potted_b_dahlia_a_early_summer",
+"flower_potted_c_dahlia_a_early_summer",
+"flower_potted_c_dahlia_c_early_summer",
+"flower_potted_e_dahlia_a_summer",
+"flower_potted_e_dahlia_b_summer",
+"flower_potted_c_dahlia_c_summer",
+"flower_potted_b_dahlia_a_late_summer",
+"flower_potted_d_dahlia_a_late_summer",
+"flower_potted_e_dahlia_a_late_summer",
+"flower_potted_b_dahlia_c_late_summer",
+"flower_potted_d_dahlia_c_late_summer",
+"flower_potted_e_dahlia_c_late_summer",
+"flower_potted_c_dahlia_b_early_fall",
+"flower_potted_c_dahlia_c_early_fall",
+"flower_potted_c_dahlia_b_fall",
+"flower_potted_e_dahlia_b_fall",
+"flower_potted_a_dahlia_c_fall",
+"flower_potted_b_dahlia_c_fall",
+"flower_potted_d_dahlia_c_fall",
+"flower_potted_c_dahlia_a_late_fall",
+"flower_potted_e_dahlia_c_late_fall",
+"flower_potted_b_dahlia_a_early_winter",
+"flower_potted_a_dahlia_b_early_winter",
+"flower_potted_d_dahlia_b_early_winter",
+"flower_potted_b_dahlia_c_early_winter",
+"flower_potted_c_dahlia_c_early_winter",
+"flower_potted_a_dahlia_b_winter",
+"flower_potted_b_dahlia_b_winter",
+"flower_potted_d_dahlia_c_winter",
+"flower_potted_a_dahlia_a_late_winter",
+"flower_potted_d_dahlia_a_late_winter",
+"flower_potted_a_dahlia_b_late_winter",
+"flower_potted_d_dahlia_b_late_winter",
+"flower_potted_a_dahlia_c_late_winter",
+"flower_potted_d_dahlia_c_late_winter",
+"flower_potted_c_iris_c_spring",
+"flower_potted_e_iris_c_spring",
+"flower_potted_d_iris_b_late_spring",
+"flower_potted_b_iris_c_late_spring",
+"flower_potted_c_iris_a_early_summer",
+"flower_potted_d_iris_b_early_summer",
+"flower_potted_c_iris_c_early_summer",
+"flower_potted_a_iris_a_summer",
+"flower_potted_a_iris_b_summer",
+"flower_potted_a_iris_c_summer",
+"flower_potted_c_iris_a_late_summer",
+"flower_potted_b_iris_b_late_summer",
+"flower_potted_d_iris_b_late_summer",
+"flower_potted_d_iris_a_early_fall",
+"flower_potted_e_iris_a_early_fall",
+"flower_potted_d_iris_b_early_fall",
+"flower_potted_d_iris_a_fall",
+"flower_potted_d_iris_c_fall",
+"flower_potted_c_iris_a_late_fall",
+"flower_potted_e_iris_a_late_fall",
+"flower_potted_b_iris_b_late_fall",
+"flower_potted_d_iris_b_late_fall",
+"flower_potted_d_iris_c_late_fall",
+"flower_potted_d_iris_c_early_winter",
+"flower_potted_b_iris_c_winter",
+"flower_potted_c_iris_c_winter",
+"flower_potted_e_iris_c_winter",
+"flower_potted_b_iris_b_late_winter",
+"flower_potted_d_iris_b_late_winter",
+"flower_potted_e_iris_b_late_winter",
+"flower_potted_a_iris_c_late_winter",
+"flower_potted_a_poppy_a_early_spring",
+"flower_potted_c_poppy_a_early_spring",
+"flower_potted_e_poppy_a_early_spring",
+"flower_potted_a_poppy_b_early_spring",
+"flower_potted_b_poppy_b_early_spring",
+"flower_potted_c_poppy_b_early_spring",
+"flower_potted_d_poppy_b_early_spring",
+"flower_potted_a_poppy_a_spring",
+"flower_potted_e_poppy_a_spring",
+"flower_potted_a_poppy_b_spring",
+"flower_potted_b_poppy_b_spring",
+"flower_potted_e_poppy_b_spring",
+"flower_potted_a_poppy_b_late_spring",
+"flower_potted_a_poppy_c_late_spring",
+"flower_potted_b_poppy_c_late_spring",
+"flower_potted_c_poppy_c_late_spring",
+"flower_potted_c_poppy_c_early_summer",
+"flower_potted_e_poppy_c_early_summer",
+"flower_potted_d_poppy_a_summer",
+"flower_potted_c_poppy_b_summer",
+"flower_potted_c_poppy_c_summer",
+"flower_potted_a_poppy_a_late_summer",
+"flower_potted_e_poppy_a_late_summer",
+"flower_potted_d_poppy_b_late_summer",
+"flower_potted_e_poppy_b_late_summer",
+"flower_potted_a_poppy_a_early_fall",
+"flower_potted_a_poppy_b_early_fall",
+"flower_potted_b_poppy_b_early_fall",
+"flower_potted_e_poppy_b_early_fall",
+"flower_potted_a_poppy_c_early_fall",
+"flower_potted_d_poppy_a_fall",
+"flower_potted_e_poppy_a_fall",
+"flower_potted_a_poppy_b_fall",
+"flower_potted_a_poppy_c_fall",
+"flower_potted_c_poppy_a_late_fall",
+"flower_potted_d_poppy_b_late_fall",
+"flower_potted_e_poppy_b_late_fall",
+"flower_potted_c_poppy_c_late_fall",
+"flower_potted_a_poppy_a_early_winter",
+"flower_potted_b_poppy_a_early_winter",
+"flower_potted_e_poppy_a_early_winter",
+"flower_potted_d_poppy_b_early_winter",
+"flower_potted_c_poppy_a_winter",
+"flower_potted_e_poppy_b_winter",
+"flower_potted_b_poppy_a_late_winter",
+"flower_potted_a_poppy_c_late_winter",
+"flower_potted_b_poppy_c_late_winter",
+"flower_potted_a_tulip_a_early_spring",
+"flower_potted_d_tulip_a_early_spring",
+"flower_potted_e_tulip_b_early_spring",
+"flower_potted_a_tulip_c_early_spring",
+"flower_potted_b_tulip_c_early_spring",
+"flower_potted_c_tulip_a_late_spring",
+"flower_potted_d_tulip_a_late_spring",
+"flower_potted_d_tulip_a_early_summer",
+"flower_potted_e_tulip_a_early_summer",
+"flower_potted_c_tulip_b_early_summer",
+"flower_potted_a_tulip_c_early_summer",
+"flower_potted_a_tulip_a_summer",
+"flower_potted_b_tulip_a_summer",
+"flower_potted_c_tulip_a_summer",
+"flower_potted_d_tulip_b_summer",
+"flower_potted_e_tulip_b_summer",
+"flower_potted_b_tulip_c_summer",
+"flower_potted_d_tulip_a_late_summer",
+"flower_potted_a_tulip_b_late_summer",
+"flower_potted_a_tulip_c_late_summer",
+"flower_potted_a_tulip_b_early_fall",
+"flower_potted_a_tulip_c_early_fall",
+"flower_potted_b_tulip_a_fall",
+"flower_potted_c_tulip_b_fall",
+"flower_potted_c_tulip_c_fall",
+"flower_potted_e_tulip_c_fall",
+"flower_potted_e_tulip_a_late_fall",
+"flower_potted_d_tulip_b_late_fall",
+"flower_potted_d_tulip_b_early_winter",
+"flower_potted_e_tulip_b_early_winter",
+"flower_potted_b_tulip_c_early_winter",
+"flower_potted_d_tulip_c_early_winter",
+"flower_potted_b_tulip_a_late_winter",
+"flower_potted_a_tulip_b_late_winter",
+"flower_potted_d_tulip_b_late_winter",
+"flower_potted_a_tulip_c_late_winter"
+];
+	collFlowerNew = [
+"bf_flower_potted_c_coneflower_a_early_fall",
+"bf_flower_potted_b_coneflower_a_early_spring",
+"bf_flower_potted_d_coneflower_a_early_summer",
+"bf_flower_potted_b_coneflower_a_early_winter",
+"bf_flower_potted_b_coneflower_a_late_summer",
+"bf_flower_potted_d_coneflower_a_summer",
+"bf_flower_potted_e_coneflower_b_early_summer",
+"bf_flower_potted_c_coneflower_b_early_winter",
+"bf_flower_potted_e_coneflower_b_fall",
+"bf_flower_potted_b_coneflower_b_late_fall",
+"bf_flower_potted_c_coneflower_b_late_winter",
+"bf_flower_potted_c_coneflower_c_early_fall",
+"bf_flower_potted_e_coneflower_c_fall",
+"bf_flower_potted_c_dahlia_a_early_fall",
+"bf_flower_potted_a_dahlia_a_fall",
+"bf_flower_potted_c_dahlia_a_winter",
+"bf_flower_potted_e_dahlia_b_early_summer",
+"bf_flower_potted_a_dahlia_b_late_fall",
+"bf_flower_potted_b_dahlia_b_late_summer",
+"bf_flower_potted_b_dahlia_c_late_spring",
+"bf_flower_potted_e_dahlia_c_spring",
+"bf_flower_potted_c_iris_a_early_spring",
+"bf_flower_potted_b_iris_a_early_winter",
+"bf_flower_potted_a_iris_a_late_spring",
+"bf_flower_potted_d_iris_a_late_winter",
+"bf_flower_potted_c_iris_a_spring",
+"bf_flower_potted_e_iris_a_winter",
+"bf_flower_potted_c_iris_b_early_spring",
+"bf_flower_potted_e_iris_b_early_winter",
+"bf_flower_potted_e_iris_b_fall",
+"bf_flower_potted_b_iris_b_spring",
+"bf_flower_potted_a_iris_b_winter",
+"bf_flower_potted_e_iris_c_early_fall",
+"bf_flower_potted_e_iris_c_early_spring",
+"bf_flower_potted_b_iris_c_late_summer",
+"bf_flower_potted_c_poppy_a_early_summer",
+"bf_flower_potted_b_poppy_a_late_spring",
+"bf_flower_potted_e_poppy_b_early_summer",
+"bf_flower_potted_e_poppy_b_late_winter",
+"bf_flower_potted_a_poppy_c_early_spring",
+"bf_flower_potted_e_poppy_c_early_winter",
+"bf_flower_potted_d_poppy_c_late_summer",
+"bf_flower_potted_c_poppy_c_spring",
+"bf_flower_potted_c_poppy_c_winter",
+"bf_flower_potted_a_tulip_a_early_fall",
+"bf_flower_potted_e_tulip_a_early_winter",
+"bf_flower_potted_e_tulip_a_spring",
+"bf_flower_potted_b_tulip_a_winter",
+"bf_flower_potted_d_tulip_b_late_spring",
+"bf_flower_potted_d_tulip_b_spring",
+"bf_flower_potted_e_tulip_b_winter",
+"bf_flower_potted_e_tulip_c_late_fall",
+"bf_flower_potted_c_tulip_c_late_spring",
+"bf_flower_potted_a_tulip_c_spring",
+"bf_flower_potted_e_tulip_c_winter"
+];		
+	collBush   = [
+"flower_bush_aster_early_spring_noPot_pat2_varA_medium",
+"flower_bush_aster_early_spring_pot_pat3_varA_small",
+"flower_bush_aster_early_spring_pot_pat3_varB_medium",
+"flower_bush_aster_spring_pot_pat1_varA_small",
+"flower_bush_aster_spring_noPot_pat2_varA_small",
+"flower_bush_aster_spring_pot_pat2_varA_medium",
+"flower_bush_aster_spring_pot_pat2_varB_large",
+"flower_bush_aster_spring_noPot_pat3_varA_medium",
+"flower_bush_aster_late_spring_noPot_pat1_varA_medium",
+"flower_bush_aster_late_spring_pot_pat1_varA_medium",
+"flower_bush_aster_late_spring_noPot_pat2_varA_medium",
+"flower_bush_aster_late_spring_pot_pat2_varA_medium",
+"flower_bush_aster_late_spring_pot_pat3_varA_small",
+"flower_bush_aster_early_summer_noPot_pat1_varA_small",
+"flower_bush_aster_early_summer_noPot_pat1_varB_large",
+"flower_bush_aster_early_summer_noPot_pat2_varA_medium",
+"flower_bush_aster_early_summer_noPot_pat3_varB_small",
+"flower_bush_aster_early_summer_pot_pat3_varB_medium",
+"flower_bush_aster_summer_noPot_pat2_varA_medium",
+"flower_bush_aster_summer_pot_pat2_varB_medium",
+"flower_bush_aster_summer_noPot_pat3_varB_large",
+"flower_bush_aster_summer_pot_pat3_varA_small",
+"flower_bush_aster_summer_pot_pat3_varB_large",
+"flower_bush_aster_late_summer_noPot_pat1_varB_medium",
+"flower_bush_aster_late_summer_pot_pat1_varB_small",
+"flower_bush_aster_late_summer_pot_pat1_varB_large",
+"flower_bush_aster_late_summer_noPot_pat2_varA_large",
+"flower_bush_aster_late_summer_pot_pat2_varA_large",
+"flower_bush_aster_late_summer_pot_pat2_varB_small",
+"flower_bush_aster_late_summer_pot_pat2_varB_large",
+"flower_bush_aster_late_summer_noPot_pat3_varA_small",
+"flower_bush_aster_early_fall_pot_pat1_varB_medium",
+"flower_bush_aster_early_fall_pot_pat1_varB_large",
+"flower_bush_aster_early_fall_noPot_pat2_varB_small",
+"flower_bush_aster_early_fall_pot_pat2_varA_medium",
+"flower_bush_aster_early_fall_pot_pat2_varA_large",
+"flower_bush_aster_early_fall_pot_pat2_varB_small",
+"flower_bush_aster_early_fall_noPot_pat3_varB_large",
+"flower_bush_aster_late_fall_noPot_pat2_varA_large",
+"flower_bush_aster_late_fall_pot_pat2_varA_medium",
+"flower_bush_aster_late_fall_pot_pat2_varB_small",
+"flower_bush_aster_late_fall_pot_pat3_varA_large",
+"flower_bush_aster_early_winter_noPot_pat1_varA_large",
+"flower_bush_aster_early_winter_noPot_pat1_varB_large",
+"flower_bush_aster_winter_noPot_pat3_varA_large",
+"flower_bush_aster_winter_pot_pat3_varA_large",
+"flower_bush_aster_winter_pot_pat3_varB_small",
+"flower_bush_aster_winter_pot_pat3_varB_medium",
+"flower_bush_aster_late_winter_noPot_pat2_varA_medium",
+"flower_bush_aster_late_winter_noPot_pat3_varA_small",
+"flower_bush_aster_late_winter_noPot_pat3_varB_large",
+"flower_bush_aster_late_winter_pot_pat3_varB_large",
+"flower_bush_azalea_early_spring_pot_pat1_varA_medium",
+"flower_bush_azalea_early_spring_noPot_pat2_varA_medium",
+"flower_bush_azalea_early_spring_pot_pat2_varA_medium",
+"flower_bush_azalea_early_spring_pot_pat3_varA_large",
+"flower_bush_azalea_early_spring_pot_pat3_varB_small",
+"flower_bush_azalea_spring_noPot_pat1_varA_medium",
+"flower_bush_azalea_spring_pot_pat3_varA_small",
+"flower_bush_azalea_late_spring_noPot_pat2_varA_large",
+"flower_bush_azalea_early_summer_noPot_pat1_varA_large",
+"flower_bush_azalea_early_summer_noPot_pat1_varB_medium",
+"flower_bush_azalea_early_summer_pot_pat1_varB_large",
+"flower_bush_azalea_early_summer_noPot_pat2_varA_large",
+"flower_bush_azalea_early_summer_pot_pat2_varB_large",
+"flower_bush_azalea_early_summer_noPot_pat3_varA_medium",
+"flower_bush_azalea_summer_noPot_pat1_varB_large",
+"flower_bush_azalea_summer_pot_pat3_varB_medium",
+"flower_bush_azalea_late_summer_pot_pat1_varB_small",
+"flower_bush_azalea_late_summer_pot_pat1_varB_large",
+"flower_bush_azalea_late_summer_noPot_pat2_varB_large",
+"flower_bush_azalea_early_fall_noPot_pat1_varB_small",
+"flower_bush_azalea_early_fall_noPot_pat2_varA_large",
+"flower_bush_azalea_early_fall_pot_pat3_varB_large",
+"flower_bush_azalea_fall_pot_pat1_varA_large",
+"flower_bush_azalea_fall_pot_pat1_varB_large",
+"flower_bush_azalea_fall_noPot_pat2_varB_small",
+"flower_bush_azalea_fall_pot_pat2_varA_large",
+"flower_bush_azalea_fall_pot_pat2_varB_large",
+"flower_bush_azalea_fall_pot_pat3_varA_medium",
+"flower_bush_azalea_late_fall_pot_pat1_varA_large",
+"flower_bush_azalea_late_fall_pot_pat1_varB_small",
+"flower_bush_azalea_late_fall_pot_pat3_varA_small",
+"flower_bush_azalea_late_fall_pot_pat3_varB_medium",
+"flower_bush_azalea_early_winter_noPot_pat1_varA_medium",
+"flower_bush_azalea_early_winter_pot_pat2_varA_small",
+"flower_bush_azalea_early_winter_pot_pat3_varA_small",
+"flower_bush_azalea_early_winter_pot_pat3_varA_medium",
+"flower_bush_azalea_winter_noPot_pat2_varB_small",
+"flower_bush_azalea_late_winter_pot_pat2_varB_large",
+"flower_bush_azalea_late_winter_noPot_pat3_varA_large",
+"flower_bush_beebalm_early_spring_pot_pat2_varB_large",
+"flower_bush_beebalm_spring_noPot_pat2_varB_small",
+"flower_bush_beebalm_spring_noPot_pat2_varB_large",
+"flower_bush_beebalm_late_spring_noPot_pat1_varA_small",
+"flower_bush_beebalm_early_summer_noPot_pat2_varA_small",
+"flower_bush_beebalm_early_summer_noPot_pat2_varB_small",
+"flower_bush_beebalm_early_summer_noPot_pat2_varB_medium",
+"flower_bush_beebalm_early_summer_pot_pat2_varB_small",
+"flower_bush_beebalm_early_summer_noPot_pat3_varB_large",
+"flower_bush_beebalm_early_summer_pot_pat3_varA_medium",
+"flower_bush_beebalm_summer_pot_pat1_varA_medium",
+"flower_bush_beebalm_summer_pot_pat1_varB_large",
+"flower_bush_beebalm_late_summer_pot_pat1_varA_medium",
+"flower_bush_beebalm_late_summer_noPot_pat2_varB_large",
+"flower_bush_beebalm_late_summer_noPot_pat3_varA_medium",
+"flower_bush_beebalm_late_summer_pot_pat3_varA_large",
+"flower_bush_beebalm_late_summer_pot_pat3_varB_medium",
+"flower_bush_beebalm_fall_noPot_pat2_varB_small",
+"flower_bush_beebalm_late_fall_noPot_pat3_varA_medium",
+"flower_bush_beebalm_late_fall_noPot_pat3_varA_large",
+"flower_bush_beebalm_late_fall_pot_pat3_varB_small",
+"flower_bush_beebalm_early_winter_noPot_pat1_varB_medium",
+"flower_bush_beebalm_early_winter_noPot_pat1_varB_large",
+"flower_bush_beebalm_early_winter_noPot_pat2_varA_large",
+"flower_bush_beebalm_winter_noPot_pat2_varA_small",
+"flower_bush_beebalm_winter_noPot_pat2_varB_large",
+"flower_bush_beebalm_winter_pot_pat2_varB_medium",
+"flower_bush_beebalm_late_winter_noPot_pat1_varB_medium",
+"flower_bush_beebalm_late_winter_pot_pat1_varA_small",
+"flower_bush_beebalm_late_winter_pot_pat1_varA_large",
+"flower_bush_beebalm_late_winter_noPot_pat2_varA_medium",
+"flower_bush_beebalm_late_winter_pot_pat2_varA_small",
+"flower_bush_beebalm_late_winter_pot_pat3_varB_large",
+"flower_bush_lilac_early_spring_noPot_pat1_varA_large",
+"flower_bush_lilac_early_spring_pot_pat1_varA_medium",
+"flower_bush_lilac_early_spring_pot_pat2_varA_large",
+"flower_bush_lilac_spring_noPot_pat3_varB_large",
+"flower_bush_lilac_late_spring_noPot_pat2_varB_large",
+"flower_bush_lilac_late_spring_pot_pat2_varB_medium",
+"flower_bush_lilac_early_summer_noPot_pat2_varA_medium",
+"flower_bush_lilac_early_summer_pot_pat2_varA_medium",
+"flower_bush_lilac_early_summer_noPot_pat3_varA_small",
+"flower_bush_lilac_summer_noPot_pat1_varA_large",
+"flower_bush_lilac_summer_pot_pat1_varA_medium",
+"flower_bush_lilac_summer_pot_pat1_varB_medium",
+"flower_bush_lilac_summer_noPot_pat2_varB_medium",
+"flower_bush_lilac_late_summer_noPot_pat2_varA_large",
+"flower_bush_lilac_late_summer_pot_pat2_varA_medium",
+"flower_bush_lilac_early_fall_noPot_pat1_varB_large",
+"flower_bush_lilac_early_fall_pot_pat1_varA_small",
+"flower_bush_lilac_fall_pot_pat3_varA_medium",
+"flower_bush_lilac_late_fall_noPot_pat2_varB_medium",
+"flower_bush_lilac_late_fall_pot_pat3_varA_large",
+"flower_bush_lilac_early_winter_pot_pat3_varA_large",
+"flower_bush_lilac_winter_pot_pat1_varB_large",
+"flower_bush_lilac_winter_pot_pat2_varA_large",
+"flower_bush_lilac_winter_noPot_pat3_varA_small",
+"flower_bush_lilac_winter_noPot_pat3_varB_small",
+"flower_bush_lilac_late_winter_pot_pat2_varB_medium",
+"flower_bush_lupine_early_spring_noPot_pat1_varA_large",
+"flower_bush_lupine_early_spring_pot_pat1_varB_small",
+"flower_bush_lupine_early_spring_noPot_pat2_varA_large",
+"flower_bush_lupine_early_spring_noPot_pat2_varB_small",
+"flower_bush_lupine_early_spring_pot_pat2_varB_small",
+"flower_bush_lupine_spring_noPot_pat2_varA_small",
+"flower_bush_lupine_spring_pot_pat2_varA_medium",
+"flower_bush_lupine_late_spring_noPot_pat3_varB_large",
+"flower_bush_lupine_early_summer_pot_pat1_varA_medium",
+"flower_bush_lupine_early_summer_pot_pat1_varA_large",
+"flower_bush_lupine_early_summer_noPot_pat2_varA_small",
+"flower_bush_lupine_early_summer_noPot_pat2_varB_medium",
+"flower_bush_lupine_early_summer_pot_pat2_varB_large",
+"flower_bush_lupine_summer_pot_pat1_varB_medium",
+"flower_bush_lupine_summer_pot_pat2_varA_large",
+"flower_bush_lupine_summer_noPot_pat3_varA_small",
+"flower_bush_lupine_late_summer_pot_pat1_varA_large",
+"flower_bush_lupine_late_summer_noPot_pat2_varA_small",
+"flower_bush_lupine_late_summer_noPot_pat2_varA_medium",
+"flower_bush_lupine_late_summer_noPot_pat2_varB_large",
+"flower_bush_lupine_fall_noPot_pat1_varA_small",
+"flower_bush_lupine_fall_noPot_pat1_varA_medium",
+"flower_bush_lupine_fall_noPot_pat1_varB_large",
+"flower_bush_lupine_fall_noPot_pat3_varA_small",
+"flower_bush_lupine_late_fall_noPot_pat1_varA_small",
+"flower_bush_lupine_late_fall_pot_pat1_varA_large",
+"flower_bush_lupine_late_fall_pot_pat1_varB_small",
+"flower_bush_lupine_late_fall_noPot_pat3_varA_medium",
+"flower_bush_lupine_early_winter_noPot_pat3_varA_small",
+"flower_bush_lupine_early_winter_noPot_pat3_varA_large",
+"flower_bush_lupine_early_winter_noPot_pat3_varB_medium",
+"flower_bush_lupine_early_winter_pot_pat3_varB_small",
+"flower_bush_lupine_early_winter_pot_pat3_varB_medium",
+"flower_bush_lupine_early_winter_pot_pat3_varB_large",
+"flower_bush_lupine_late_winter_noPot_pat3_varA_small",
+"flower_bush_lupine_late_winter_noPot_pat3_varA_large"
+];
+	collBushNew = [
+"bf_flower_bush_aster_early_spring_noPot_1_varB_small",
+"bf_flower_bush_aster_fall_noPot_1_varB_large",
+"bf_flower_bush_aster_late_fall_noPot_1_varA_small",
+"bf_flower_bush_aster_late_winter_pot_1_varA_med",
+"bf_flower_bush_aster_summer_noPot_1_varA_large",
+"bf_flower_bush_aster_winter_noPot_1_varA_med",
+"bf_flower_bush_aster_early_winter_pot_2_varA_med",
+"bf_flower_bush_aster_fall_noPot_2_varB_large",
+"bf_flower_bush_aster_winter_pot_2_varB_med",
+"bf_flower_bush_aster_early_winter_pot_3_varA_med",
+"bf_flower_bush_aster_fall_pot_3_varB_med",
+"bf_flower_bush_azalea_late_spring_pot_1_varB_large",
+"bf_flower_bush_azalea_late_winter_noPot_1_varA_large",
+"bf_flower_bush_azalea_winter_noPot_1_varA_large",
+"bf_flower_bush_azalea_late_fall_noPot_2_varB_small",
+"bf_flower_bush_azalea_spring_pot_2_varA_med",
+"bf_flower_bush_azalea_summer_pot_2_varB_small",
+"bf_flower_bush_azalea_late_spring_noPot_3_varB_med",
+"bf_flower_bush_azalea_late_summer_noPot_3_varB_small",
+"bf_flower_bush_azalea_winter_pot_3_varB_small",
+"bf_flower_bush_beebalm_early_fall_noPot_1_varB_large",
+"bf_flower_bush_beebalm_early_spring_noPot_1_varB_med",
+"bf_flower_bush_beebalm_early_summer_noPot_1_varA_med",
+"bf_flower_bush_beebalm_fall_pot_1_varA_large",
+"bf_flower_bush_beebalm_late_fall_pot_1_varB_med",
+"bf_flower_bush_beebalm_spring_noPot_1_varB_med",
+"bf_flower_bush_beebalm_winter_pot_1_varA_med",
+"bf_flower_bush_beebalm_early_fall_noPot_2_varA_large",
+"bf_flower_bush_beebalm_late_fall_noPot_2_varB_small",
+"bf_flower_bush_beebalm_late_spring_pot_2_varB_small",
+"bf_flower_bush_beebalm_summer_noPot_2_varB_med",
+"bf_flower_bush_beebalm_early_fall_noPot_3_varB_small",
+"bf_flower_bush_beebalm_early_spring_noPot_3_varB_small",
+"bf_flower_bush_beebalm_early_winter_pot_3_varA_med",
+"bf_flower_bush_beebalm_fall_noPot_3_varB_med",
+"bf_flower_bush_beebalm_late_spring_pot_3_varA_large",
+"bf_flower_bush_beebalm_spring_noPot_3_varB_med",
+"bf_flower_bush_beebalm_summer_pot_3_varB_large",
+"bf_flower_bush_beebalm_winter_pot_3_varB_med",
+"bf_flower_bush_lilac_early_summer_noPot_1_varB_small",
+"bf_flower_bush_lilac_early_winter_pot_1_varB_med",
+"bf_flower_bush_lilac_fall_pot_1_varB_small",
+"bf_flower_bush_lilac_late_fall_noPot_1_varB_small",
+"bf_flower_bush_lilac_late_spring_pot_1_varB_med",
+"bf_flower_bush_lilac_late_summer_pot_1_varB_large",
+"bf_flower_bush_lilac_late_winter_noPot_1_varA_large",
+"bf_flower_bush_lilac_spring_noPot_1_varB_large",
+"bf_flower_bush_lilac_early_fall_pot_2_varB_large",
+"bf_flower_bush_lilac_early_winter_noPot_2_varB_small",
+"bf_flower_bush_lilac_fall_noPot_2_varA_large",
+"bf_flower_bush_lilac_spring_pot_2_varB_med",
+"bf_flower_bush_lilac_early_fall_pot_3_varB_large",
+"bf_flower_bush_lilac_early_spring_pot_3_varB_large",
+"bf_flower_bush_lilac_late_spring_noPot_3_varB_small",
+"bf_flower_bush_lilac_late_summer_pot_3_varA_large",
+"bf_flower_bush_lilac_late_winter_pot_3_varA_small",
+"bf_flower_bush_lilac_summer_noPot_3_varB_med",
+"bf_flower_bush_lupine_early_fall_noPot_1_varB_large",
+"bf_flower_bush_lupine_early_winter_noPot_1_varA_large",
+"bf_flower_bush_lupine_late_spring_noPot_1_varA_large",
+"bf_flower_bush_lupine_late_winter_pot_1_varB_large",
+"bf_flower_bush_lupine_spring_pot_1_varA_large",
+"bf_flower_bush_lupine_winter_noPot_1_varB_large",
+"bf_flower_bush_lupine_early_fall_pot_2_varA_large",
+"bf_flower_bush_lupine_early_winter_noPot_2_varB_large",
+"bf_flower_bush_lupine_fall_noPot_2_varA_med",
+"bf_flower_bush_lupine_late_fall_noPot_2_varA_small",
+"bf_flower_bush_lupine_late_spring_noPot_2_varB_small",
+"bf_flower_bush_lupine_late_winter_pot_2_varA_med",
+"bf_flower_bush_lupine_winter_pot_2_varA_small",
+"bf_flower_bush_lupine_early_fall_noPot_3_varB_small",
+"bf_flower_bush_lupine_early_spring_pot_3_varA_large",
+"bf_flower_bush_lupine_early_summer_noPot_3_varB_med",
+"bf_flower_bush_lupine_late_summer_pot_3_varA_large",
+"bf_flower_bush_lupine_spring_pot_3_varB_small",
+"bf_flower_bush_lupine_winter_pot_3_varB_small"
+];
+	</script>
+</body>
+</html>
