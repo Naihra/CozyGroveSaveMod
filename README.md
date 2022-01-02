@@ -91,11 +91,6 @@ Expands or reduces the size of the backpack, storage or wardrobe. To make it les
 
 The input values for rows can be positive or negative, and it will add or remove 4 slots per row to keep the inventories consistent. If after removing the slots you end up with less than what you should have based on the upgrades you've already purchased the game will add them when you load the save.
 
-### Imp Rescue
-Can be used to move imps that are not showing in game, usually because they have spawned in safe areas.
-
-Full readme inside.
-
 ## iOS to Steam converter
 Contains only the load/save functions of the apps that modify the data. It will simply take the iOS save and return one compatible with Steam.
 
