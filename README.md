@@ -1,8 +1,6 @@
-# Game version
-#### 03/12/21 
-Apps have been updated to cover features of version 4.0.0 and the winter festival but they should still work with 3.2.0 save files. In case it doesn't work use the release 3.2.0 version.
-
-Please redownload the data folder as well, since required files inside have been modified too. Be aware that the files inside this folder can spoil some of the new content.
+# Latest change
+#### 03/01/22
+Added "Quest" option to finder, to show the bears that have active quests story (blue) or timed (red) ones. It's necessary to redownload the data folder as well.
 
 # Save location
 Steam and MAC: https://support.spryfox.com/hc/en-us/articles/1500003981321-Where-can-I-find-my-Cozy-Grove-logs-and-save-files-
@@ -30,11 +28,11 @@ The table can be sorted by clicking on the header, and the animals that show on 
 ### Finder
 Locates any item that's on the ground, can use any of the preset selection or input a string in "Custom search", then press Enter or the button.
 
-![image](https://user-images.githubusercontent.com/84879535/134813855-9220861c-2d10-47bd-ab16-a1a3a04b72ce.png)
+![image](https://user-images.githubusercontent.com/84879535/147986537-127dc0fb-83b8-49a3-946d-58bdd474587b.png)
 
 In the "Presets" option any of the options can be selected, including all of them at once.
 
-![image](https://user-images.githubusercontent.com/84879535/134813870-b84fe64e-44e1-472e-93cc-f2da844e435f.png)
+![image](https://user-images.githubusercontent.com/84879535/147986549-0fb64e3e-05e2-4f24-b06f-84723df60c08.png)
 
 Shells and critters not in collection will show highlighted.
 
