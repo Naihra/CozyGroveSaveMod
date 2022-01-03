@@ -31,19 +31,21 @@
 		<option value="findCrit">Critters</option>				
 		<option value="findHid">Hidden objects</option>										
 		<option value="findAnim">Hungry animals</option>										
+		<option value="findQuest">Quests</option>										
 	</select> 
 	
 	<input id="btFind" type="button" value="Find me!" onclick="findMe();" disabled="false">
 	<br>
 	<input id="inputCustom" type="text" disabled="false" style="display:inline">
 
-	<input id="chkImp"  type="checkbox" disabled="true" style="display:none"><label style="display:none" id="labImp"  onclick="markFind(0);" >Imps</label>
-	<input id="chkFora" type="checkbox" disabled="true" style="display:none"><label style="display:none" id="labFora" onclick="markFind(1);" >Forage</label>
-	<input id="chkRock" type="checkbox" disabled="true" style="display:none"><label style="display:none" id="labRock" onclick="markFind(2);" >Rocks</label>
-	<input id="chkWild" type="checkbox" disabled="true" style="display:none"><label style="display:none" id="labWild" onclick="markFind(3);" >Wild trees</label>
-	<input id="chkCrit" type="checkbox" disabled="true" style="display:none"><label style="display:none" id="labCrit" onclick="markFind(4);" >Critters</label>
-	<input id="chkHid"  type="checkbox" disabled="true" style="display:none"><label style="display:none" id="labHid"  onclick="markFind(5);" >Hidden objects</label>
-	<input id="chkAnim" type="checkbox" disabled="true" style="display:none"><label style="display:none" id="labAnim" onclick="markFind(6);" >Hungry animals</label>
+	<input id="chkImp"   type="checkbox" disabled="true" style="display:none"><label style="display:none" id="labImp"   onclick="markFind(0);" >Imps</label>
+	<input id="chkFora"  type="checkbox" disabled="true" style="display:none"><label style="display:none" id="labFora"  onclick="markFind(1);" >Forage</label>
+	<input id="chkRock"  type="checkbox" disabled="true" style="display:none"><label style="display:none" id="labRock"  onclick="markFind(2);" >Rocks</label>
+	<input id="chkWild"  type="checkbox" disabled="true" style="display:none"><label style="display:none" id="labWild"  onclick="markFind(3);" >Wild trees</label>
+	<input id="chkCrit"  type="checkbox" disabled="true" style="display:none"><label style="display:none" id="labCrit"  onclick="markFind(4);" >Critters</label>
+	<input id="chkHid"   type="checkbox" disabled="true" style="display:none"><label style="display:none" id="labHid"   onclick="markFind(5);" >Hidden objects</label>
+	<input id="chkAnim"  type="checkbox" disabled="true" style="display:none"><label style="display:none" id="labAnim"  onclick="markFind(6);" >Hungry animals</label>
+	<input id="chkQuest" type="checkbox" disabled="true" style="display:none"><label style="display:none" id="labQuest" onclick="markFind(7);" >Quests</label>
 	<br><br>
 	
 	<canvas id="myCanvas" width="1000" height="1000" style="border:1px solid #c3c3c3;">
@@ -51,7 +53,7 @@
 	</canvas>
 		
 	<script>		
-	arrayFind = ["Imp", "Fora", "Rock", "Wild", "Crit", "Hid", "Anim"];
+	arrayFind = ["Imp", "Fora", "Rock", "Wild", "Crit", "Hid", "Anim", "Quest"];
 	
 	iniPaint();
 	
@@ -87,11 +89,12 @@
 	
 	function findMe()
 	{
-		clearCanvas();
-		paintGrid();
-		paintBase();
 		var item = document.getElementById("findItem").options[document.getElementById("findItem").selectedIndex].value;
 		
+		clearCanvas();
+		paintGrid();
+		paintBase( ( item == "findQuest" || ( item == "findMix" && document.getElementById("chkQuest").checked ) ) ? "Q" : "" );
+	
 		switch (item)
 		{		
 			case "findCustom":
@@ -298,8 +301,7 @@
 			{					
 				var imgName = line.data.configID;				
 				loadAndDraw(rutaForage, "png", imgName, pos_x, pos_y, size, size);	
-			}
-			
+			}			
 		}		
 	}
 		

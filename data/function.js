@@ -110,7 +110,7 @@ function circleAndWrite(texto, pos_x, pos_y, color, font)
 	ctx.fillText(texto, pos_x + 12, pos_y + 6); 		
 }
 
-function paintBase( fences )
+function paintBase( param )
 {
 	const size = 60;		
 	
@@ -134,9 +134,17 @@ function paintBase( fences )
 		var line = json.SpiritsByID[key];
 		
 		if ( line.spawnedGenerator )
-		{		
+		{	
 			pos_x = 4 * (line.location[0] + offset_x);
 			pos_y = 4 * (offset_y - line.location[1]);
+			
+			if ( param == "Q" && ( !( line.currentGoal == null ) || line.storyController.hasStartedStoryStep ) )
+			{
+				ctx.beginPath();
+				ctx.arc(pos_x, pos_y, 28, 0, 2 * Math.PI);				
+				ctx.fillStyle = ( line.storyController.hasStartedStoryStep ) ? ( ( line.startedQuest  ) ? "LightSkyBlue" : "DodgerBlue" ) : ( ( line.startedQuest  ) ? "darksalmon" : "darkred" );
+				ctx.fill();						
+			}				
 								
 			loadAndDraw(rutaBase, "jpg", line.characterID, pos_x - (size / 2), pos_y - (size / 2), size, size);
 		}
@@ -152,7 +160,7 @@ function paintBase( fences )
 		
 		try {
 		
-		if ( fences && ( line.item.configID == "dc_LC_fence_B_common" || line.item.configID == "dc_LC_fence_A_common" ) )
+		if ( param == "F" && ( line.item.configID == "dc_LC_fence_B_common" || line.item.configID == "dc_LC_fence_A_common" ) )
 		{
 			pos_x = 4 * (line.position[0] + offset_x) - (size_fence / 4);
 			pos_y = 4 * (offset_y - line.position[1]) - (size_fence / 2);
