@@ -1,4 +1,7 @@
 # Latest change
+#### 09/01/22
+New app, "Hairdresser". Allows to pick any hairstyle at any moment.
+
 #### 03/01/22
 Added "Quest" option to finder, to show the bears that have active quests story (blue) or timed (red) ones. It's necessary to redownload the data folder as well.
 
@@ -88,6 +91,13 @@ Grouped by type/season, type/color, color.
 Expands or reduces the size of the backpack, storage or wardrobe. To make it less of a cheat there is an optional "Donation" field, where you can input the amount you want to spend on the upgrade.
 
 The input values for rows can be positive or negative, and it will add or remove 4 slots per row to keep the inventories consistent. If after removing the slots you end up with less than what you should have based on the upgrades you've already purchased the game will add them when you load the save.
+
+### Hairdresser
+#### Version 4.1.0 added 2 hairstyles that were missing previously, the Short single side shaved hair in blonde and in dark brown. If picked on a lower version it'll change to another hairstyle, but won't break the save.
+
+Changes the current hairstyle with another one of your choice. Can choose to change color, style or both.
+
+![image](https://user-images.githubusercontent.com/84879535/148698216-f1551443-8203-43a7-8c0e-812781fb369e.png)
 
 ## iOS to Steam converter
 Contains only the load/save functions of the apps that modify the data. It will simply take the iOS save and return one compatible with Steam.
