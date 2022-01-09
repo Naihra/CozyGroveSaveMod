@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Cosy Grove Hair Dresser</title>
+	<style type="text/css">
+		a,label,input {
+			font-family: 'Courier New', monospace;
+			margin: 5px;
+		}
+	</style>	
+	<script src="./data/function.js"></script>
+</head>
+
+<body>
+
+	<h1>Cozy Grove Hair Dresser</h1>	
+	
+	<label for="uploadSourceFile">Select your save</label><br>
+	<input id="uploadSourceFile" type="file" accept=".sf">
+	<br><br>
+	
+	Click on the desired color/style to select it<br>
+
+	<input id="tgColor" type="button" value="Show colors" onclick="toggleColor();"><br>
+	<img id="c1"  src="./data/hair/c1.png"  alt="Black" 		onclick="setColor(1);" style="display:none">
+	<img id="c2"  src="./data/hair/c2.png"  alt="White" 		onclick="setColor(2);" style="display:none">
+	<img id="c3"  src="./data/hair/c3.png"  alt="Light blonde" 	onclick="setColor(3);" style="display:none">
+	<img id="c4"  src="./data/hair/c4.png"  alt="Dark blonde" 	onclick="setColor(4);" style="display:none">
+	<img id="c5"  src="./data/hair/c5.png"  alt="Light brown"	onclick="setColor(5);" style="display:none">
+	<img id="c6"  src="./data/hair/c6.png"  alt="Dark brown" 	onclick="setColor(6);" style="display:none"><br>
+	<img id="c7"  src="./data/hair/c7.png"  alt="Red" 			onclick="setColor(7);" style="display:none">
+	<img id="c8"  src="./data/hair/c8.png"  alt="Orange" 		onclick="setColor(8);" style="display:none">
+	<img id="c9"  src="./data/hair/c9.png"  alt="Pink" 			onclick="setColor(9);" style="display:none">
+	<img id="c10" src="./data/hair/c10.png" alt="Purple" 		onclick="setColor(10);" style="display:none">
+	<img id="c11" src="./data/hair/c11.png" alt="Blue" 			onclick="setColor(11);" style="display:none">
+	<img id="c12" src="./data/hair/c12.png" alt="Navy" 			onclick="setColor(12);" style="display:none">
+	<img id="c13" src="./data/hair/c13.png" alt="Green"			onclick="setColor(13);" style="display:none"><br>
+	<br>	
+		
+	<input id="tgStyle" type="button" value="Show styles" onclick="toggleStyle();"><br>
+	<img id="s1"   src="./data/hair/s1.png"   alt="Bowlcut"							onclick="setStyle(1);"  style="display:none">
+	<img id="s2"   src="./data/hair/s2.png"   alt="Crew cut"						onclick="setStyle(2);"  style="display:none">
+	<img id="s3"   src="./data/hair/s3.png"   alt="Emo hair" 						onclick="setStyle(3);"  style="display:none">
+	<img id="s4"   src="./data/hair/s4.png"   alt="Short buzz" 						onclick="setStyle(4);"  style="display:none">
+	<img id="s5"   src="./data/hair/s5.png"   alt="Thick curls" 					onclick="setStyle(5);"  style="display:none">
+	<img id="s6"   src="./data/hair/s6.png"   alt="Short curly hair" 				onclick="setStyle(6);"  style="display:none">
+	<img id="s7"   src="./data/hair/s7.png"   alt="Short afro" 						onclick="setStyle(7);"  style="display:none">
+	<img id="s8"   src="./data/hair/s8.png"   alt="Short parted hair" 				onclick="setStyle(8);"  style="display:none">
+	<img id="s9"   src="./data/hair/s9.png"   alt="Short sides shaved hair" 		onclick="setStyle(9);"  style="display:none">
+	<img id="s10"  src="./data/hair/s10.png"  alt="Short single side shaved hair" 	onclick="setStyle(10);" style="display:none"><br>
+	<img id="s11"  src="./data/hair/s11.png"  alt="Bob" 							onclick="setStyle(11);" style="display:none">
+	<img id="s12"  src="./data/hair/s12.png"  alt="Braid crown" 					onclick="setStyle(12);" style="display:none">
+	<img id="s13"  src="./data/hair/s13.png"  alt="Center parted hair" 				onclick="setStyle(13);" style="display:none">
+	<img id="s14"  src="./data/hair/s14.png"  alt="Cornrows" 						onclick="setStyle(14);" style="display:none">
+	<img id="s15"  src="./data/hair/s15.png"  alt="Classic hair" 					onclick="setStyle(15);" style="display:none">
+	<img id="s16"  src="./data/hair/s16.png"  alt="Medium curly hair" 				onclick="setStyle(16);" style="display:none">
+	<img id="s17"  src="./data/hair/s17.png"  alt="Medium dreads" 					onclick="setStyle(17);" style="display:none">
+	<img id="s18"  src="./data/hair/s18.png"  alt="Medium straight hair" 			onclick="setStyle(18);" style="display:none">
+	<img id="s19"  src="./data/hair/s19.png"  alt="Medium wavy hair" 				onclick="setStyle(19);" style="display:none">
+	<img id="s20"  src="./data/hair/s20.png"  alt="Mullet" 							onclick="setStyle(20);" style="display:none"><br>
+	<img id="s21"  src="./data/hair/s21.png"  alt="Kimono hairstyle" 				onclick="setStyle(21);" style="display:none">
+	<img id="s22"  src="./data/hair/s22.png"  alt="Twist braids" 					onclick="setStyle(22);" style="display:none">
+	<img id="s23"  src="./data/hair/s23.png"  alt="Gothic hair" 					onclick="setStyle(23);" style="display:none">
+	<img id="s24"  src="./data/hair/s24.png"  alt="Afro buns" 						onclick="setStyle(24);" style="display:none">
+	<img id="s25"  src="./data/hair/s25.png"  alt="Long braided hair" 				onclick="setStyle(25);" style="display:none">
+	<img id="s26"  src="./data/hair/s26.png"  alt="Long curly hair" 				onclick="setStyle(26);" style="display:none">
+	<img id="s27"  src="./data/hair/s27.png"  alt="Long straight hair" 				onclick="setStyle(27);" style="display:none">
+	<img id="s28"  src="./data/hair/s28.png"  alt="Long wavy hair"					onclick="setStyle(28);" style="display:none">
+	<img id="s29"  src="./data/hair/s29.png"  alt="Ponytail" 						onclick="setStyle(29);" style="display:none">
+	<img id="s30"  src="./data/hair/s30.png"  alt="Ceremonial braids"  				onclick="setStyle(30);" style="display:none"><br>
+	<br>
+	
+	<label>Color:</label><input id="nameColor" disabled="true" size=30><br>
+	<label>Style:</label><input id="nameStyle" disabled="true" size=30><br>
+	<br>		
+	
+	<input id="btSetHair" type="button" value="Save" onclick="setHair();" disabled ="true">
+	<br><br>
+
+	<script>
+	
+	document.getElementById("uploadSourceFile").addEventListener("change", loadSource, false);
+			
+	function start( result )
+	{
+		if ( result )
+		{
+			checkSave = false;			
+			document.getElementById("btSetHair").disabled = false;	
+				
+			getHair();							
+		}
+	}
+	
+	function getHair()
+	{	
+		currentColor = getColor( json.Player.Clothing.currentHair.configID );			
+		currentStyle = getStyle( json.Player.Clothing.currentHair.configID );	
+
+		document.getElementById("nameColor").value = colorOut[colorIn.indexOf(currentColor)];		
+		document.getElementById("nameStyle").value = styleOut[styleIn.indexOf(currentStyle)];
+	}
+	
+	function setHair() 
+	{
+		json.Player.Clothing.currentHair.configID = "hair".concat("_", currentStyle, "_hair_", currentColor, "_LUT");
+		save( JSON, checkSave );
+	}
+	
+	function getStyle ( hair )
+	{
+		var hairSplit = hair.split("_");		
+		hairSplit.shift();
+		
+		if ( hairSplit[0] == "starter" )
+		{
+			hairSplit.shift();
+		}		
+		
+		var fin = hairSplit.indexOf("hair");
+		
+		var style = hairSplit[0];
+		for ( var i = 1; i < fin; i++ )
+		{
+			style = style.concat("_", hairSplit[i]);
+		}
+		return style;
+	}
+	
+	function getColor ( hair )
+	{
+		var hairSplit = hair.split("_");		
+		hairSplit.shift();
+		
+		var ini = hairSplit.indexOf("hair") + 1;
+		var fin = hairSplit.indexOf("LUT") - 1;;
+		
+		var color = ( ini == fin ) ? hairSplit[ini] : hairSplit[ini].concat("_", hairSplit[fin] );
+		return color;		
+	}
+	
+	function setColor( id )
+	{
+		checkSave = true;
+		currentColor = colorIn[id];
+		document.getElementById("nameColor").value = colorOut[id];			
+	}
+	
+	function setStyle( id )
+	{
+		checkSave = true;
+		currentStyle = styleIn[id];
+		document.getElementById("nameStyle").value = styleOut[id];			
+	}
+	
+	function toggleColor()
+	{
+		if ( document.getElementById("tgColor").value.substring(0,4) == "Hide" )
+		{
+			for ( var i = 1; i <= 13; i++ )
+			{
+				document.getElementById("c".concat(i)).style = "display:none";
+			}		
+			document.getElementById("tgColor").value = "Show colors";
+		}
+		else
+		{
+			for ( var i = 1; i <= 13; i++ )
+			{
+				document.getElementById("c".concat(i)).style = "block";
+			}
+			document.getElementById("tgColor").value = "Hide colors";
+		}
+	}
+	
+	function toggleStyle()
+	{
+		if ( document.getElementById("tgStyle").value.substring(0,4) == "Hide" )
+		{
+			for ( var i = 1; i <= 30; i++ )
+			{
+				document.getElementById("s".concat(i)).style = "display:none";
+			}
+			document.getElementById("tgStyle").value = "Show styles";
+		}
+		else
+		{
+			for ( var i = 1; i <= 30; i++ )
+			{
+				document.getElementById("s".concat(i)).style = "block";
+			}
+			document.getElementById("tgStyle").value = "Hide styles";
+		}
+	}	
+	
+colorIn = [ "",
+"black",
+"white",
+"blonde_light",
+"blonde_dark",
+"brown_light",
+"brown_dark",
+"red",
+"orange",
+"pink",
+"purple",
+"blue",
+"navy",
+"green" ];
+
+colorOut = [ "",
+"Black",
+"White",
+"Light blonde",
+"Blonde",
+"Light brown",
+"Dark brown",
+"Red",
+"Orange",
+"Pink",
+"Purple",
+"Blue",
+"Navy",
+"Green" ];
+
+styleIn = [ "",
+"bowlcut",
+"crewcut",
+"emo",
+"short_buzz",
+"short_coily",
+"short_curly",
+"short_fro",
+"short_parted",
+"short_sidesshaved",
+"short_singlesideshave",
+"bob",
+"braid_crown",
+"center_part",
+"cornrows",
+"girl_1",
+"medium_curly",
+"medium_dreads",
+"medium_straight",
+"medium_wavy",
+"mullet",
+"bamboo",
+"cottage",
+"gothic",
+"long_afrobuns",
+"long_braids",
+"long_curly",
+"long_straight",
+"long_wavy",
+"ponytail",
+"wicker" ];
+
+styleOut = [ "",
+"Bowlcut",
+"Crew cut",
+"Emo hair",
+"Short buzz",
+"Thick curls",
+"Short curly hair",
+"Short afro",
+"Short parted hair",
+"Short sides shaved hair",
+"Short single side shaved hair",
+"Bob",
+"Braid crown",
+"Center parted hair",
+"Cornrows",
+"Classic hair",
+"Medium curly hair",
+"Medium dreads",
+"Medium straight hair",
+"Medium wavy hair",
+"Mullet",
+"Kimono hairstyle",
+"Twist braids",
+"Gothic hair",
+"Afro buns",
+"Long braided hair",
+"Long curly hair",
+"Long straight hair",
+"Long wavy hair",
+"Ponytail",
+"Ceremonial braids" ];
+
+	</script>
+</body>
+</html>
