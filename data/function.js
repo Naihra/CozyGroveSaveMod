@@ -11,7 +11,21 @@ function save( JSON, checkSave, slot )
 	var jsonStr2  = JSON.stringify(json);	
 	//Found a character that was making the encode fail
 	jsonStr2 = jsonStr2.replace("—","-");	
-	const outputStr = `${fileTkn[0]},${window.btoa(jsonStr2)}`;
+	
+	try
+	{
+		var outputStr = `${fileTkn[0]},${window.btoa(jsonStr2)}`;
+	} catch(err)
+	{
+		try	
+		{		
+			outputStr = `${fileTkn[0]},${window.btoa(unescape(encodeURIComponent(jsonStr2)))}`;
+		} catch(err)
+		{
+			alert("Couldn't generate new save file");
+			return;
+		}
+	}
 		
 	const element = document.createElement('a');
 	element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(outputStr));
